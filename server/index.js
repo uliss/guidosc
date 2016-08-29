@@ -15,7 +15,7 @@ var sounds = require('./src/sound.js');
 const NODE_PORT = 3000;
 const OSC_IN_PORT = 5000;
 const OSC_OUT_PORT = OSC_IN_PORT + 1;
-const PID_FILE = "/usr/local/var/run/supercollider-ui.pid";
+const PID_FILE = "/usr/local/var/run/guidosc.pid";
 const SERVER_ROOT = __dirname + "../build";
 
 var log = utils.log();

@@ -21,7 +21,7 @@ Manager.prototype.bindClient = function(socket) {
     if(!addr) addr = "127.0.0.1";
 
     log.verbose('client %s connected', addr);
-    this.clients[addr] = addr;
+    this.clients[addr] = { sock: socket };
 
     var self = this;
     socket.on('disconnect', function() {

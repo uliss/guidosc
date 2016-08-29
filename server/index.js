@@ -61,8 +61,7 @@ try {
 
     io.on('connection', function(socket) {
         client_manager.bindClient(socket);
-        // serverTimer.bindSocket(APP_GLOBAL, socket);
-        // mod_server.bindSocket(APP_GLOBAL, socket);
+        server.bindSocket(socket);
         ping.bindSocket(socket);
         timer.bindSocket(socket);
         // mod_ui.bindSocket(APP_GLOBAL, socket);

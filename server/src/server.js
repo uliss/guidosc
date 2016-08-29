@@ -125,13 +125,14 @@ Server.prototype.bindOsc = function() {
     var osc_server = this.app_global.osc.server;
     var io = this.app_global.io;
 
-    // this.oscServer().on(node_path("/supercollider"), function(msg, rinfo) {
+    // this.oscServer().on("/supercollider", function(msg, rinfo) {
+    //     log.warn("IMPLEMENT ME!");
     //     log.verbose('=> client: %s', msg.slice(1));
-    //     io.emit(cli_path("/supercollider"), msg.slice(1));
+    //     // io.emit(cli_path("/supercollider"), msg.slice(1));
     // });
 
     this.oscServer().on("/guido/forward", function(msg, rinfo) {
-        if(msg.length < 2) {
+        if (msg.length < 2) {
             log.error("forward:", "invalid argument count");
             return;
         }
@@ -143,62 +144,50 @@ Server.prototype.bindOsc = function() {
     });
 }
 
-function bindSocket(app_global, socket) {
-    notifyOnClientConnect(app_global, socket);
-    notifyOnClientDisconnect(app_global, socket);
+Server.prototype.bindSocket = function(socket) {
+    // mod.Module.prototype.bindSocket.call(this, socket);
+    // socket.on(node_path("/supercollider"), function(msg) {
+    //     log.verbose('=> supercollider: %s', msg);
+    //     if (msg.length == 1) {
+    //         osc_client.send(sc_path("/control"), msg[0]);
+    //     }
+    //     if (msg.length == 2) {
+    //         osc_client.send(sc_path("/control"), msg[0], msg[1]);
+    //     }
+    // });
+    //
+    var self = this;
 
-    var osc_client = app_global.osc.client;
+    socket.on("/guido/forward", function(msg) {
+        try {
+            var path = msg[0];
+            var args = msg.slice(1);
 
-    socket.on(node_path("/supercollider"), function(msg) {
-        log.verbose('=> supercollider: %s', msg);
-        if (msg.length == 1) {
-            osc_client.send(sc_path("/control"), msg[0]);
-        }
-        if (msg.length == 2) {
-            osc_client.send(sc_path("/control"), msg[0], msg[1]);
-        }
-    });
-
-    socket.on("/forward", function(msg) {
-        switch (msg.length) {
-            case 0:
-                log.error("Invalid forward message format. Should be: DEST_PATH [ARGS]");
-                break;
-            case 1:
-                log.verbose('client => supercollider:', msg[0]);
-                osc_client.send(msg[0]);
-            default:
-                {
-                    log.verbose('client => supercollider: %s %s', msg[0], msg.slice(1).join(' '));
-                    osc_client.send(msg[0], msg.slice(1));
-                }
+            switch (msg.length) {
+                case 0:
+                    log.error("Invalid forward message format. Should be: DEST_PATH [ARGS]");
+                    break;
+                case 1:
+                    log.verbose('client => master:', path);
+                    this.oscClient().send(path);
+                default:
+                    {
+                        log.verbose('client => master: %s %s', path, args.join(' '));
+                        this.oscClient().send(path, args);
+                    }
+            }
+        } catch (e) {
+            log.error(e.message);
         }
     });
 }
 
 Server.prototype.notifyOnBoot = function() {
-    this.oscClient().send(this.path(), 'nodejs_boot');
+    this.oscClient().send(this.path(), 'boot');
 }
 
-function notifyOnClientConnect(app_global, socket) {
-    var addr = socket.request.connection.remoteAddress.substring(7);
-    if (!addr) addr = "127.0.0.1";
-    log.info('connected:', addr);
-    app_global.osc.client.send(sc_path("/control"), 'client_connect', addr);
+Server.prototype.notifyOnQuit = function() {
+    this.oscClient().send(this.path(), 'quit');
 }
-
-function notifyOnClientDisconnect(app_global, socket) {
-    var addr = socket.request.connection.remoteAddress.substring(7);
-    if (!addr) addr = "127.0.0.1";
-
-    socket.on('disconnect', function() {
-        log.info('disconnected:', addr);
-        app_global.osc.client.send(sc_path("/control"), 'client_disconnect', addr);
-    });
-}
-
-module.exports.bindSocket = bindSocket;
-module.exports.notifyOnClientConnect = notifyOnClientConnect;
-module.exports.notifyOnClientDisconnect = notifyOnClientDisconnect
 
 module.exports = Server;

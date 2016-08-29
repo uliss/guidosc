@@ -125,11 +125,11 @@ Server.prototype.bindOsc = function() {
     //     log.verbose('=> client: %s', msg.slice(1));
     //     io.emit(cli_path("/supercollider"), msg.slice(1));
     // });
-    //
-    // this.oscServer().on(node_path("/forward"), function(msg, rinfo) {
-    //     log.verbose('supercollider => client: %s %s', msg[1], msg.slice(2).join(' '));
-    //     io.emit(msg[1], msg.slice(2));
-    // });
+
+    this.oscServer().on("/guido/to_client", function(msg, rinfo) {
+        log.verbose('master => client: %s %s', msg[1], msg.slice(2).join(' '));
+        io.emit(msg[1], msg.slice(2));
+    });
 }
 
 function bindSocket(app_global, socket) {

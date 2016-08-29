@@ -26,9 +26,12 @@ Module.prototype.path = function() {
     return "/guido/module/" + this.name;
 };
 
-Module.prototype.addCommand = function(name, help, func) {
+Module.prototype.addCommand = function(name, help, func, opts) {
+    if (!opts) opts = {};
     this.commands[name] = func;
     func.help_message = help;
+    func.call_options = opts;
+    func.command_path = this.path() + "/" + name;
 };
 
 function parseOscOptions(args) {
@@ -80,10 +83,12 @@ Module.prototype.registerOSCHandler = function() {
             log.debug(" with options: %j", opts, {});
         }
 
+        // TODO broadcast
+
         var result = self.commands[cmd].call(self, opts);
         if (result) {
             if (opts.back || cmd == "help") {
-                self.sendToMaster(cmd, result);
+                self.sendToMaster([cmd, result]);
             } else {
                 log.debug(result, {});
             }
@@ -91,34 +96,68 @@ Module.prototype.registerOSCHandler = function() {
     });
 };
 
+function parseMsg(msg) {
+    var cmd, args;
+    if (Array.isArray(msg)) {
+        cmd = msg[0];
+        args = msg.slice(1);
+    } else if (typeof msg === "string") {
+        cmd = msg;
+        args = [];
+    }
+
+    if (cmd === undefined) {
+        return null;
+    }
+
+    return {
+        name: cmd,
+        args: args
+    };
+}
+
+Module.prototype.runCommand = function(name, args, callback) {
+    var result = this.commands[name].call(this, args);
+    // run socket callback
+    if (callback) callback(result);
+
+    var response = {
+        cmd: name
+    };
+
+    if (args) response.args = args;
+    if (result) response.value = result;
+
+    var broadcast_type = this.commands[name].call_options.broadcast;
+    if (broadcast_type) {
+        this.broadcast(response, broadcast_type);
+    }
+
+    return result;
+}
+
+Module.prototype.checkCommand = function(name) {
+    if (name === undefined) {
+        log.error("empty command");
+        return false;
+    }
+
+    if (this.commands[name] === undefined) {
+        log.error("command not found:", name);
+        return false;
+    }
+
+    return true;
+};
+
 Module.prototype.bindSocket = function(socket) {
     var path = this.path();
     var self = this;
 
-    socket.on(path, function(msg) {
-        var cmd = msg[0];
-        if (!cmd) { // empty command
-            log.error("bindSocket: empty command");
-            return;
-        };
-
-        if (!self.commands[cmd]) { // command not found in list
-            log.error("Invalid command:", msg);
-            return;
-        }
-
-        var opts = parseOscOptions(msg.slice(1));
-        opts.sock = socket;
-
-        log.debug("socket command: '%s'", cmd);
-        var result = self.commands[cmd].call(self, opts);
-        if (result) {
-            var answer = {};
-            answer[cmd] = result;
-            answer.module = self.name;
-            answer.path = self.path();
-            socket.emit(self.path(), answer);
-        }
+    socket.on(path, function(msg, callback) {
+        var cmd = parseMsg(msg);
+        if (!self.checkCommand(cmd.name)) return;
+        self.runCommand(cmd.name, cmd.args, callback);
     });
 };
 
@@ -142,6 +181,16 @@ Module.prototype.onOSC = function(path, func) {
     this.app_global.osc.server.on(path, func);
 };
 
+Module.prototype.socketSendToAll = function(args) {
+    log.debug("socketSendToAll: %s", args, {});
+    this.io().emit(this.path(), args);
+};
+
+Module.prototype.socketSendToOthers = function(socket, args) {
+    log.debug("socketSendToOthers: %s", args, {});
+    socket.broadcast.emit(this.path(), args);
+};
+
 Module.prototype.sendOSC = function() {
     this.app_global.osc.client.send.apply(this.app_global.osc.client, arguments);
 };
@@ -152,5 +201,23 @@ Module.prototype.sendToMaster = function() {
     log.debug("sendToMaster: %j", args, {});
     this.app_global.osc.client.send.apply(this.app_global.osc.client, args);
 };
+
+Module.prototype.broadcast = function(msg, type) {
+    msg = JSON.stringify(msg);
+    var broadcast_path = this.path() + "/broadcast";
+    if (!type) type = 'all';
+    switch (type) {
+        case 'all':
+            {
+                this.app_global.io.emit(broadcast_path, msg);
+                this.app_global.osc.client.send(broadcast_path, msg);
+                log.debug("broadcast message: %s %s", broadcast_path, msg);
+            }
+            break;
+        default:
+            log.error("unknown broadcast type:", type);
+            break;
+    }
+}
 
 module.exports.Module = Module;

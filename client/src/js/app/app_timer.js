@@ -1,49 +1,54 @@
 var fittext = require('fittext.js');
 var server = require('../server.js');
 
-Number.prototype.toHHMMSS = function () {
+Number.prototype.toHHMMSS = function() {
     var seconds = Math.floor(this),
-    hours = Math.floor(seconds / 3600);
-    seconds -= hours*3600;
+        hours = Math.floor(seconds / 3600);
+    seconds -= hours * 3600;
     var minutes = Math.floor(seconds / 60);
-    seconds -= minutes*60;
+    seconds -= minutes * 60;
 
-    if (hours   < 10) {hours   = "0"+hours;}
-    if (minutes < 10) {minutes = "0"+minutes;}
-    if (seconds < 10) {seconds = "0"+seconds;}
-    return hours+':'+minutes+':'+seconds;
+    if (hours < 10) {
+        hours = "0" + hours;
+    }
+    if (minutes < 10) {
+        minutes = "0" + minutes;
+    }
+    if (seconds < 10) {
+        seconds = "0" + seconds;
+    }
+    return hours + ':' + minutes + ':' + seconds;
 };
 
 function timerControlSetStarted() {
     $("#timerStart")
-    .removeClass("btn-info")
-    .addClass("active")
-    .addClass("btn-danger")
-    .text("Stop")
-    .attr("value", 1);
+        .removeClass("btn-info")
+        .addClass("active")
+        .addClass("btn-danger")
+        .text("Stop")
+        .attr("value", 1);
 }
 
 function timerControlSetStopped() {
     $("#timerStart")
-    .addClass("btn-info")
-    .removeClass("active")
-    .removeClass("btn-danger")
-    .text("Start")
-    .attr("value", 0);
+        .addClass("btn-info")
+        .removeClass("active")
+        .removeClass("btn-danger")
+        .text("Start")
+        .attr("value", 0);
 }
 
 function TimerControl(timer) {
     this.start = $("#timerStart")
-    .click(function(){
-        if($(this).attr("value") == 1) {
-            timerControlSetStopped();
-            timer.stop();
-        }
-        else {
-            timerControlSetStarted();
-            timer.start();
-        }
-    });
+        .click(function() {
+            if ($(this).attr("value") == 1) {
+                timerControlSetStopped();
+                timer.stop();
+            } else {
+                timerControlSetStarted();
+                timer.start();
+            }
+        });
 
     $("#timerReset").click(function() {
         timer.reset();
@@ -51,27 +56,37 @@ function TimerControl(timer) {
 }
 
 function ServerTimer(element) {
-    this.socketPath = '/timer/server/control';
+    this.socketPath = '/guido/module/timer';
     var n = 0;
     var self = this;
 
-    element.text(n.toHHMMSS());
-    server.send(this.socketPath, 'get');
-
-    server.on(this.socketPath, function(msg){
-        console.log(msg);
-        switch(msg) {
-            case 'start':
-            timerControlSetStarted();
-            break;
-            case 'stop':
-            timerControlSetStopped();
-            break;
-        }
+    server.socket.emit(this.socketPath, 'get', function(data) {
+        element.text(data.toHHMMSS());
     });
 
-    server.on('/server/timer', function(msg) {
-        element.text(msg .toHHMMSS());
+    server.socket.emit(this.socketPath, 'state', function(state) {
+        if (state)
+            timerControlSetStarted();
+        else
+            timerControlSetStopped();
+    });
+
+    server.on(this.socketPath + "/broadcast", function(msg) {
+        msg = JSON.parse(msg);
+        if (msg.time !== undefined) {
+            element.text(msg.time.toHHMMSS());
+        }
+
+        if (msg.cmd !== undefined) {
+            switch (msg.cmd) {
+                case 'start':
+                    timerControlSetStarted();
+                    break;
+                case 'stop':
+                    timerControlSetStopped();
+                    break;
+            }
+        }
     });
 
     this.reset = function() {
@@ -103,7 +118,7 @@ function ClientTimer(element) {
 
     this.start = function() {
         var self = this;
-        this.timerId = setInterval(function(){
+        this.timerId = setInterval(function() {
             self.next();
         }, 1000);
 
@@ -122,7 +137,7 @@ function ClientTimer(element) {
     };
 
     this.update = function() {
-        this.element.text(this.currentTime .toHHMMSS());
+        this.element.text(this.currentTime.toHHMMSS());
     };
 
     this.next = function() {

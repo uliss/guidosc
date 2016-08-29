@@ -14,11 +14,11 @@ function from_sc(path, func) {
     socket.on(utils.cli_path(path), func);
 }
 
-function send(path, args) {
+function send(path, args, fn) {
     if(args === undefined)
         socket.emit(path);
     else
-        socket.emit(path, args);
+        socket.emit(path, args, fn);
 }
 
 function on(path, callback) {

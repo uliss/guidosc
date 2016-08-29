@@ -1,18 +1,43 @@
-var log = require('./utils').log;
+var inherits = require('inherits');
+var utils = require('./utils');
+var mod = require('./module.js');
+var log = utils.log('timer');
 
-function httpGet(req, res) {
-    res.sendFile('timer.html', {
-        root: __dirname + '/../build/'
+function ServerTimer(app_global) {
+    mod.Module.call(this, app_global, 'timer');
+    this.currentTime = 0;
+    this.timerId = null;
+
+    this.addCommand('start', 'starts timer', function() {
+        this.start();
+    }, {
+        broadcast: 'all'
+    });
+
+    this.addCommand('stop', 'stops timer', function() {
+        this.stop();
+    }, {
+        broadcast: 'all'
+    });
+
+    this.addCommand('reset', 'resets timer', function() {
+        this.reset();
+    });
+
+    this.addCommand('get', 'get current time', function() {
+        return this.currentTime;
+    });
+
+    this.addCommand('set', 'set current time', function(t) {
+        this.setTime(t);
+    });
+
+    this.addCommand('state', 'get current state', function() {
+        return this.isRunning();
     });
 }
 
-function ServerTimer(io, socket_path) {
-    this.io = io;
-    this.socketPath = socket_path;
-    this.currentTime = 0;
-    this.timerId = null;
-    this.controlPath = '/timer/server/control';
-}
+inherits(ServerTimer, mod.Module);
 
 ServerTimer.prototype.isRunning = function() {
     return this.timerId != null;
@@ -20,11 +45,9 @@ ServerTimer.prototype.isRunning = function() {
 
 ServerTimer.prototype.update = function() {
     log.debug('ServerTimer:', this.currentTime.toHHMMSS());
-    this.io.emit(this.socketPath, this.currentTime);
-}
-
-ServerTimer.prototype.emitControl = function(msg) {
-    this.io.emit(this.controlPath, msg);
+    this.broadcast({
+        time: this.currentTime
+    });
 }
 
 ServerTimer.prototype.reset = function() {
@@ -56,77 +79,10 @@ ServerTimer.prototype.stop = function() {
     this.timerId = null;
 }
 
-ServerTimer.prototype.bindSocket = function(app_global, socket) {
-    $this = this;
-
-    socket.on(this.controlPath, function(msg) {
-        switch (msg) {
-            case 'reset':
-                $this.reset();
-                break;
-            case 'start':
-                $this.start();
-                socket.broadcast.emit($this.controlPath, msg);
-                break;
-            case 'stop':
-                $this.stop();
-                socket.broadcast.emit($this.controlPath, msg);
-                break;
-            case 'get':
-                $this.update();
-                if ($this.isRunning())
-                    $this.emitControl('start');
-                else
-                    $this.emitControl('stop');
-                break;
-            case 'debug':
-                $this.debug(true);
-                break;
-        }
-    });
+ServerTimer.prototype.setTime = function(t) {
+    log.verbose('ServerTimer set time:', t.toHHMMSS());
+    this.currentTime = t;
+    this.update();
 }
 
-function ClientTimer(io, socketPath) {
-    ServerTimer.call(this, io, socketPath);
-}
-
-ClientTimer.prototype = Object.create(ServerTimer.prototype);
-ClientTimer.prototype.constructor = ClientTimer;
-
-ClientTimer.prototype.next = function() {
-    this.currentTime++;
-    if (this.currentTime % 5 == 0) {
-        this.update();
-    }
-};
-
-function control(socket, timer, msg) {
-    switch (msg) {
-        case 'reset':
-            timer.reset();
-            break;
-        case 'start':
-            timer.start();
-            socket.broadcast.emit(timer.controlPath, msg);
-            break;
-        case 'stop':
-            timer.stop();
-            socket.broadcast.emit(timer.controlPath, msg);
-            break;
-        case 'get':
-            timer.update();
-            if (timer.isRunning())
-                timer.emitControl('start');
-            else
-                timer.emitControl('stop');
-            break;
-        case 'debug':
-            timer.debug(true);
-            break;
-    }
-}
-
-module.exports.httpGet = httpGet;
-module.exports.control = control;
 module.exports.ServerTimer = ServerTimer;
-module.exports.ClientTimer = ClientTimer;

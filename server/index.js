@@ -45,7 +45,6 @@ try {
 
     var oscServer = new osc.Server(OSC_IN_PORT, '0.0.0.0');
     var oscClient = new osc.Client('127.0.0.1', OSC_OUT_PORT);
-    var serverTimer = new timer.ServerTimer(io, '/server/timer');
 
     APP_GLOBAL.osc = {};
     APP_GLOBAL.osc.server = oscServer;
@@ -55,6 +54,7 @@ try {
     // mod_ui.init(APP_GLOBAL);
     var client_manager = new Manager(APP_GLOBAL);
     var ping = new Ping(APP_GLOBAL);
+    var timer = new timer.ServerTimer(APP_GLOBAL);
     // sounds.init();
 
     io.on('connection', function(socket) {
@@ -62,6 +62,7 @@ try {
         // serverTimer.bindSocket(APP_GLOBAL, socket);
         // mod_server.bindSocket(APP_GLOBAL, socket);
         ping.bindSocket(socket);
+        timer.bindSocket(socket);
         // mod_ui.bindSocket(APP_GLOBAL, socket);
         // sounds.bindSocket(io, socket);
     });

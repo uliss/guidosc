@@ -112,10 +112,6 @@ Server.prototype.bindOsc = function() {
     var osc_server = this.app_global.osc.server;
     var io = this.app_global.io;
 
-    // this.oscServer().on(node_path("/redirect"), function(msg, rinfo) {
-    //     log.verbose('redirect to:', msg[1]);
-    //     io.emit(cli_path("/redirect"), msg[1]);
-    // });
     //
     // this.oscServer().on(node_path("/title"), function(msg, rinfo) {
     //     log.verbose('set title:', msg[1]);

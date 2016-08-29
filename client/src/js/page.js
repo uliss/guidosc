@@ -11,7 +11,6 @@ function page_handle() {
         switch (msg[0]) {
             case 'css':
                 {
-                    console.log(msg);
                     if (msg.length == 4)
                         $(msg[1]).css(msg[2], msg[3]);
                     if (msg.length == 3)
@@ -21,17 +20,21 @@ function page_handle() {
             case 'reload':
                 window.location.reload();
                 break;
+            case 'redirect': {
+                if(msg.length != 2) {
+                    console.log("redirect: invalid arguments");
+                    return;
+                }
+
+                console.log("redirect to: " + msg[1]);
+                window.location.href = msg[1];
+            }
+            break;
             default:
                 {
                     console.log("unknown command: " + cmd + msg);
                 }
         }
-    });
-
-    // handle redirect
-    server.on('/cli/redirect', function(msg) {
-        console.log("redirect to: " + msg);
-        window.location.href = msg;
     });
 
     // handle reload

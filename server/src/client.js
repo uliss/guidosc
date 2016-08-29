@@ -7,12 +7,12 @@ function Client(app_global) {
     mod.Module.call(this, app_global, 'client');
 
     this.addCommand('css', 'set CSS style on all clients', function(msg) {
-        if(msg.length < 2) {
+        if (msg.length < 2) {
             log.error("css: invalid argument count");
             return;
         }
 
-        if(msg.length == 3) {
+        if (msg.length == 3) {
             var sel = msg[0];
             var key = msg[1];
             var val = msg[2];
@@ -21,7 +21,7 @@ function Client(app_global) {
             this.broadcast(['css', sel, key, val], 'socket');
         }
 
-        if(msg.length == 2) {
+        if (msg.length == 2) {
             var sel = msg[0];
             var css = msg[1];
 
@@ -30,9 +30,19 @@ function Client(app_global) {
         }
     });
 
-    this.addCommand('reload', 'reload page on all connected clients', function(msg) {
+    this.addCommand('reload', 'reload page on all connected clients', function() {
         log.verbose('reloading page...');
         this.broadcast(['reload'], 'socket');
+    });
+
+    this.addCommand('redirect', 'redirects all connected clients to other URL', function(args) {
+        if(args.length < 1) {
+            log.error('redirect:', 'no URL given');
+            return;
+        }
+
+        log.verbose('redirect to:', args[0]);
+        this.broadcast(['redirect', args[0]]);
     });
 }
 

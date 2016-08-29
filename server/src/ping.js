@@ -11,15 +11,4 @@ function Ping(app_global) {
 
 inherits(Ping, mod.Module);
 
-Ping.prototype.bindClient = function (socket) {
-
-};
-
-function ping_bind_socket(app_global, socket) {
-    socket.on(node_path('/ping'), function() {
-        app_global.io.emit(cli_path('/pong'));
-    });
-}
-
-
 module.exports = Ping;

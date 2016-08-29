@@ -145,7 +145,7 @@ Server.prototype.bindOsc = function() {
 }
 
 Server.prototype.bindSocket = function(socket) {
-    // mod.Module.prototype.bindSocket.call(this, socket);
+    mod.Module.prototype.bindSocket.call(this, socket);
     // socket.on(node_path("/supercollider"), function(msg) {
     //     log.verbose('=> supercollider: %s', msg);
     //     if (msg.length == 1) {
@@ -169,11 +169,11 @@ Server.prototype.bindSocket = function(socket) {
                     break;
                 case 1:
                     log.verbose('client => master:', path);
-                    this.oscClient().send(path);
+                    self.oscClient().send(path);
                 default:
                     {
                         log.verbose('client => master: %s %s', path, args.join(' '));
-                        this.oscClient().send(path, args);
+                        self.oscClient().send(path, args);
                     }
             }
         } catch (e) {

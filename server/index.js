@@ -16,7 +16,7 @@ const NODE_PORT = 3000;
 const OSC_IN_PORT = 5000;
 const OSC_OUT_PORT = OSC_IN_PORT + 1;
 const PID_FILE = "/usr/local/var/run/guidosc.pid";
-const SERVER_ROOT = __dirname + "../build";
+const SERVER_ROOT = __dirname + "/../build";
 
 var log = utils.log();
 
@@ -29,7 +29,8 @@ try {
     try {
         fs.accessSync(SERVER_ROOT, fs.F_OK);
     } catch (e) {
-        log.error("root server is not exists. did you you run 'gulp'?");
+        log.error("root server direcoty is not exists: %s", SERVER_ROOT);
+        log.error("did you you run 'gulp'?");
         process.exit(3);
     }
 
@@ -62,6 +63,7 @@ try {
     });
 
     http.listen(NODE_PORT, function() {
+        log.info('GUIDOSC server started');
         log.info('listening HTTP on *:' + NODE_PORT);
         log.info('listening OSC on *:' + OSC_IN_PORT);
         log.info('sending OSC to localhost:' + OSC_OUT_PORT);

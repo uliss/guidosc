@@ -9,6 +9,7 @@ var app_vlabel = require('./app/app_vlabel.js');
 var app_latency = require('./app/app_latency.js');
 var app_piece = require('./app/app_piece.js');
 var touch = require('./touch.js');
+var test = require('./test.js');
 
 var mod = {};
 mod.instr = require('./modules/instrument.js');

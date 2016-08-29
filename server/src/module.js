@@ -83,7 +83,7 @@ Module.prototype.registerOSCHandler = function() {
             // send back
             var opts = parseOscOptions(args);
             if (opts.back)
-                self.sendOSC(path, data);
+                self.app_global.osc.client.send(path, data);
         });
     });
 };
@@ -181,10 +181,6 @@ Module.prototype.socketSendToAll = function(args) {
 Module.prototype.socketSendToOthers = function(socket, args) {
     log.debug("socketSendToOthers: %s", args, {});
     socket.broadcast.emit(this.path(), args);
-};
-
-Module.prototype.sendOSC = function() {
-    this.app_global.osc.client.send.apply(this.app_global.osc.client, arguments);
 };
 
 Module.prototype.sendToMaster = function() {

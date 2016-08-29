@@ -6,6 +6,8 @@ function page_handle() {
         msg = JSON.parse(msg);
         var cmd = msg[0];
 
+        console.log(cmd);
+
         switch (msg[0]) {
             case 'css':
                 {
@@ -15,6 +17,9 @@ function page_handle() {
                     if (msg.length == 3)
                         $(msg[1]).css(JSON.parse(msg[2]));
                 }
+                break;
+            case 'reload':
+                window.location.reload();
                 break;
             default:
                 {

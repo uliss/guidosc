@@ -117,11 +117,6 @@ Server.prototype.bindOsc = function() {
     //     io.emit(cli_path("/redirect"), msg[1]);
     // });
     //
-    // this.oscServer().on(node_path("/reload"), function(msg, rinfo) {
-    //     log.verbose('reloading page...');
-    //     io.emit(cli_path("/reload"), msg[1]);
-    // });
-    //
     // this.oscServer().on(node_path("/title"), function(msg, rinfo) {
     //     log.verbose('set title:', msg[1]);
     //     io.emit(cli_path("/title"), msg[1]);

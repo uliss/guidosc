@@ -6,7 +6,7 @@ var log = utils.log('client');
 function Client(app_global) {
     mod.Module.call(this, app_global, 'client');
 
-    this.addCommand('css', 'set CSS style on client', function(msg) {
+    this.addCommand('css', 'set CSS style on all clients', function(msg) {
         if(msg.length < 2) {
             log.error("css: invalid argument count");
             return;
@@ -28,6 +28,11 @@ function Client(app_global) {
             log.verbose('set css: %s %s', sel, css);
             this.broadcast(['css', sel, css], 'socket');
         }
+    });
+
+    this.addCommand('reload', 'reload page on all connected clients', function(msg) {
+        log.verbose('reloading page...');
+        this.broadcast(['reload'], 'socket');
     });
 }
 

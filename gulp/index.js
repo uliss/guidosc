@@ -17,10 +17,10 @@ module.exports.add = function() {
     gulp.task('jshint', function(cb) {
         pump([
             gulp.src([
-                './src/js/*.js',
-                './src/js/app/*.js',
-                './src/js/modules/*.js',
-                './src/js/widgets/*.js'
+                './client/src/js/*.js',
+                './client/src/js/app/*.js',
+                './client/src/js/modules/*.js',
+                './client/src/js/widgets/*.js'
             ]),
             jshint(),
             jshint.reporter('jshint-stylish')
@@ -29,33 +29,31 @@ module.exports.add = function() {
 
     gulp.task('jshint:watch', function() {
         gulp.watch([
-            './src/js/*.js',
-            './src/js/app/*.js',
-            './src/js/modules/*.js',
-            './src/js/widgets/*.js'
+            './client/src/js/*.js',
+            './client/src/js/app/*.js',
+            './client/src/js/modules/*.js',
+            './client/src/js/widgets/*.js'
         ], ['jshint']);
     });
 
     gulp.task('sass', function(cb) {
         pump([
-            gulp.src('./src/css/global.scss'),
+            gulp.src('./client/src/css/global.scss'),
             sourcemaps.init(),
-            sass({
-                outputStyle: 'compact'
-            }),
+            sass({ outputStyle: 'compact' }),
             sourcemaps.write('.'),
             gulp.dest('./build/css')
         ], cb);
     });
 
     gulp.task('sass:watch', function() {
-        gulp.watch('./src/css/*.scss', ['sass']);
+        gulp.watch('./client/src/css/*.scss', ['sass']);
     });
 
     gulp.task('browserify', function(cb) {
         pump([
             // { debug: true }
-            browserify('src/js/main.js').transform('brfs').bundle(),
+            browserify('./client/src/js/main.js').transform('brfs').bundle(),
             source('bundle.js'),
             gulp.dest('./build/js')
         ], cb);
@@ -63,11 +61,11 @@ module.exports.add = function() {
 
     gulp.task('browserify:watch', function() {
         gulp.watch([
-            './src/js/*.js',
-            './src/js/app/*.js',
-            './src/js/modules/*.js',
-            './src/js/widgets/*.js',
-            './src/js/widgets/tmpl/*.html'
+            './client/src/js/*.js',
+            './client/src/js/app/*.js',
+            './client/src/js/modules/*.js',
+            './client/src/js/widgets/*.js',
+            './client/src/js/widgets/tmpl/*.html'
         ], ['browserify']);
     });
 
@@ -88,7 +86,7 @@ module.exports.add = function() {
 
     gulp.task('pug', function(cb) {
         pump([
-            gulp.src(['./src/*.pug']),
+            gulp.src(['./client/src/*.pug']),
             pug({
                 pretty: true
             }),
@@ -97,7 +95,7 @@ module.exports.add = function() {
     });
 
     gulp.task('pug:watch', function() {
-        gulp.watch(['./src/*.pug', './src/*/*.pug'], ['pug']);
+        gulp.watch(['./client/src/*.pug', './client/src/*/*.pug'], ['pug']);
     });
 
     gulp.task('bootlint', function() {
@@ -150,12 +148,12 @@ module.exports.add = function() {
 
 
     gulp.task('copy_tests:watch', function() {
-        gulp.watch('./src/js/mocha_*.js', ['copy_tests']);
+        gulp.watch('./client/src/js/mocha_*.js', ['copy_tests']);
     });
 
     gulp.task('copy_tests', function(cb) {
         pump([
-            gulp.src(['./src/js/mocha_*.js']),
+            gulp.src(['./client/src/js/mocha_*.js']),
             gulp.dest('./build/js/tests')
         ], cb);
     });
@@ -172,7 +170,7 @@ module.exports.add = function() {
     gulp.task('copy_images', function(cb) {
         pump([
             gulp.src([
-                './src/css/cover-default.png'
+                './client/src/css/cover-default.png'
             ]),
             gulp.dest('./build/css')
         ], cb);

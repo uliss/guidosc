@@ -80,9 +80,8 @@ Module.prototype.registerOSCHandler = function() {
 
         var result = self.commands[cmd].call(self, opts);
         if (result) {
-            if (opts.addr) {
-                log.debug("send %j => %s", result, opts.addr, {});
-                self.sendOSC(opts.addr, result);
+            if (opts.back) {
+                self.sendToMaster(result);
             } else {
                 log.debug(result, {});
             }
@@ -111,8 +110,14 @@ Module.prototype.onOSC = function(path, func) {
 };
 
 Module.prototype.sendOSC = function() {
-    // this.app_global.osc.client.send(arguments);
     this.app_global.osc.client.send.apply(this.app_global.osc.client, arguments);
+};
+
+Module.prototype.sendToMaster = function() {
+    var args = Array.prototype.slice.call(arguments, 0);
+    args.unshift(this.path());
+    log.debug("sendToMaster: %j", args, {});
+    this.app_global.osc.client.send.apply(this.app_global.osc.client, args);
 };
 
 module.exports.Module = Module;

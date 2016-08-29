@@ -25,32 +25,68 @@ Module.prototype.path = function() {
     return "/guido/module/" + this.name;
 };
 
-Module.prototype.addCommand = function (name, help, func) {
+Module.prototype.addCommand = function(name, help, func) {
     this.commands[name] = func;
     func.help_message = help;
 };
 
-Module.prototype.registerOSCHandler = function () {
+function parseOscOptions(args) {
+    if (!args) return {};
+    if (args.length === 0) return {};
+
+    var opts = {
+        _raw_args: args
+    };
+
+    _.chain(args).reject(args, function(k) {
+        k[0] != ":"
+    }).map(function(v) {
+        return v.slice(1).split('=', 2);
+    }).each(function(opt) {
+        if (opt.length < 2) {
+            opts[opt[0]] = true;
+            return;
+        }
+        opts[opt[0]] = opt[1];
+    });
+
+    return opts;
+};
+
+Module.prototype.registerOSCHandler = function() {
     var path = this.path();
     var self = this;
 
     this.app_global.osc.server.on(path, function(msg) {
-        log.debug(msg, {});
-
         var cmd = msg[1];
-        if(!cmd) {
+        if (!cmd) { // empty command
             log.error("No command given");
             log.error("Usage: '%s CMD [ARGS]'", path);
             log.error("Send: '%s help' to get full list", path);
             return;
         };
 
-        if(!self.commands[cmd]) {
+        if (!self.commands[cmd]) { // command not found in list
             log.error("Invalid command:", cmd);
             log.error("Send: '%s help' to get full list", path);
         }
 
-        self.commands[cmd].call(self);
+        var opts = parseOscOptions(msg.slice(2));
+        log.debug("COMMAND: '%s'", cmd);
+
+        if (!_.isEmpty(opts)) {
+            log.debug(" with options: %j", opts, {});
+        }
+
+        var result = self.commands[cmd].call(self, opts);
+        if (result) {
+            if (opts.addr) {
+                log.debug("send %j => %s", result, opts.addr, {});
+                self.sendOSC(opts.addr, result);
+            } else {
+                log.debug(result, {});
+            }
+        }
     });
 };
 
@@ -66,10 +102,6 @@ Module.prototype.oscClient = function() {
     return this.app_global.osc.client;
 };
 
-Module.prototype.oscSend = function() {
-    return this.app_global.osc.client.send(arguments);
-};
-
 Module.prototype.oscServer = function() {
     return this.app_global.osc.server;
 };
@@ -79,7 +111,8 @@ Module.prototype.onOSC = function(path, func) {
 };
 
 Module.prototype.sendOSC = function() {
-    this.app_global.osc.client.send(arguments);
+    // this.app_global.osc.client.send(arguments);
+    this.app_global.osc.client.send.apply(this.app_global.osc.client, arguments);
 };
 
 module.exports.Module = Module;

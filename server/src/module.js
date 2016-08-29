@@ -18,7 +18,6 @@ function Module(app_global, name) {
 
         // chop last "\n"
         log.info(msg.slice(0, -1));
-
         return Object.keys(this.commands);
     });
 }
@@ -82,8 +81,8 @@ Module.prototype.registerOSCHandler = function() {
 
         var result = self.commands[cmd].call(self, opts);
         if (result) {
-            if (opts.back) {
-                self.sendToMaster(result);
+            if (opts.back || cmd == "help") {
+                self.sendToMaster(cmd, result);
             } else {
                 log.debug(result, {});
             }

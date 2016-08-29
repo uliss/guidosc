@@ -70,6 +70,7 @@ Module.prototype.registerOSCHandler = function() {
         if (!self.commands[cmd]) { // command not found in list
             log.error("Invalid command:", cmd);
             log.error("Send: '%s help' to get full list", path);
+            return;
         }
 
         var opts = parseOscOptions(msg.slice(2));
@@ -86,6 +87,33 @@ Module.prototype.registerOSCHandler = function() {
             } else {
                 log.debug(result, {});
             }
+        }
+    });
+};
+
+Module.prototype.bindSocket = function(socket) {
+    var path = this.path();
+    var self = this;
+
+    socket.on(path, function(msg) {
+        var cmd = msg[0];
+        if (!cmd) { // empty command
+            log.error("bindSocket: empty command");
+            return;
+        };
+
+        if (!self.commands[cmd]) { // command not found in list
+            log.error("Invalid command:", msg);
+            return;
+        }
+
+        var opts = parseOscOptions(msg.slice(1));
+        opts.sock = socket;
+
+        log.debug("socket command: '%s'", cmd);
+        var result = self.commands[cmd].call(self, opts);
+        if (result) {
+            socket.emit(self.path(), result);
         }
     });
 };

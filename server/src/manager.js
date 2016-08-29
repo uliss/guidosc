@@ -23,6 +23,8 @@ Manager.prototype.bindClient = function(socket) {
     log.verbose('client %s connected', addr);
     this.clients[addr] = { sock: socket };
 
+    this.bindSocket(socket);
+
     var self = this;
     socket.on('disconnect', function() {
         log.verbose('client %s disconnected', addr);

@@ -1,6 +1,19 @@
+var inherits = require('inherits');
 var utils = require('./utils');
-node_path = utils.node_path;
-cli_path = utils.cli_path;
+var mod = require('./module.js');
+
+function Ping(app_global) {
+    mod.Module.call(this, app_global, 'ping');
+    this.addCommand("ping", "ping server", function() {
+        return "pong";
+    });
+}
+
+inherits(Ping, mod.Module);
+
+Ping.prototype.bindClient = function (socket) {
+
+};
 
 function ping_bind_socket(app_global, socket) {
     socket.on(node_path('/ping'), function() {
@@ -9,4 +22,4 @@ function ping_bind_socket(app_global, socket) {
 }
 
 
-module.exports.bindSocket = ping_bind_socket;
+module.exports = Ping;

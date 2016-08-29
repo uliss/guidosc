@@ -8,7 +8,8 @@ var npid = require('npid');
 var timer = require('./src/timer');
 var utils = require('./src/utils');
 var mod_server = require('./src/server');
-var mod_ping = require('./src/ping');
+var Ping = require('./src/ping');
+var Manager = require('./src/manager');
 var mod_ui = require('./src/ui');
 var sounds = require('./src/sound.js');
 
@@ -51,14 +52,17 @@ try {
     APP_GLOBAL.osc.client = oscClient;
 
     mod_server.init(APP_GLOBAL);
-    mod_ui.init(APP_GLOBAL);
+    // mod_ui.init(APP_GLOBAL);
+    var client_manager = new Manager(APP_GLOBAL);
+    var ping = new Ping(APP_GLOBAL);
     // sounds.init();
 
     io.on('connection', function(socket) {
-        serverTimer.bindSocket(APP_GLOBAL, socket);
-        mod_server.bindSocket(APP_GLOBAL, socket);
-        mod_ping.bindSocket(APP_GLOBAL, socket);
-        mod_ui.bindSocket(APP_GLOBAL, socket);
+        client_manager.bindClient(socket);
+        // serverTimer.bindSocket(APP_GLOBAL, socket);
+        // mod_server.bindSocket(APP_GLOBAL, socket);
+        ping.bindSocket(socket);
+        // mod_ui.bindSocket(APP_GLOBAL, socket);
         // sounds.bindSocket(io, socket);
     });
 

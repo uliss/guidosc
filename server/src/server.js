@@ -24,6 +24,10 @@ function Server(app_global) {
         "/": "/index"
     };
 
+    this.addCommand('pages', 'list available pages', function(msg) {
+        return Object.keys(this.MODULE_ROUTES);
+    });
+
     this.registerModules();
     this.bindHttp();
     this.bindOsc();

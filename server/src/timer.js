@@ -80,6 +80,7 @@ ServerTimer.prototype.stop = function() {
 }
 
 ServerTimer.prototype.setTime = function(t) {
+    t = parseFloat(t);
     log.verbose('ServerTimer set time:', t.toHHMMSS());
     this.currentTime = t;
     this.update();

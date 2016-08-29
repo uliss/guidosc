@@ -42,8 +42,10 @@ function parseOscOptions(args) {
         _raw_args: args
     };
 
-    _.chain(args).reject(args, function(k) {
-        k[0] != ":"
+    _.chain(args).reject(function(k) {
+        return !(typeof k === 'string' || k instanceof String)
+    }).reject(function(k) {
+        return k[0] != ":"
     }).map(function(v) {
         return v.slice(1).split('=', 2);
     }).each(function(opt) {
@@ -63,6 +65,7 @@ Module.prototype.registerOSCHandler = function() {
 
     this.app_global.osc.server.on(path, function(msg) {
         var cmd = msg[1];
+        var args = msg.slice(2);
         if (!cmd) { // empty command
             log.error("No command given");
             log.error("Usage: '%s CMD [ARGS]'", path);
@@ -76,23 +79,12 @@ Module.prototype.registerOSCHandler = function() {
             return;
         }
 
-        var opts = parseOscOptions(msg.slice(2));
-        log.debug("COMMAND: '%s'", cmd);
-
-        if (!_.isEmpty(opts)) {
-            log.debug(" with options: %j", opts, {});
-        }
-
-        // TODO broadcast
-
-        var result = self.commands[cmd].call(self, opts);
-        if (result) {
-            if (opts.back || cmd == "help") {
-                self.sendToMaster([cmd, result]);
-            } else {
-                log.debug(result, {});
-            }
-        }
+        self.runCommand(cmd, args, function(data) {
+            // send back
+            var opts = parseOscOptions(args);
+            if (opts.back)
+                self.sendOSC(path, data);
+        });
     });
 };
 

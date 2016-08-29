@@ -83,7 +83,7 @@ Module.prototype.registerOSCHandler = function() {
             // send back
             var opts = parseOscOptions(args);
             if (opts.back)
-                self.app_global.osc.client.send(path, data);
+                self.app_global.osc.client.send(path, cmd, data);
         });
     });
 };

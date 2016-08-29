@@ -69,6 +69,10 @@ Server.prototype.modulePath = function(name) {
     return this.MODULE_ROUTES[name] + '.html';
 }
 
+Server.prototype.hasSync = function(url) {
+    return this.sync_pages[url] !== undefined;
+}
+
 Server.prototype.registerModules = function() {
     var self = this;
     for (url in this.MODULE_ROUTES) {
@@ -76,7 +80,7 @@ Server.prototype.registerModules = function() {
             var req_url = req['path'];
             var path = self.modulePath(req_url);
             // sync registered modules
-            if (self.sync_dict[req_url] !== undefined) {
+            if (self.hasSync(req_url)) {
                 self.oscClient().send("/sync" + req_url);
             }
 
@@ -126,9 +130,16 @@ Server.prototype.bindOsc = function() {
     //     io.emit(cli_path("/supercollider"), msg.slice(1));
     // });
 
-    this.oscServer().on("/guido/to_client", function(msg, rinfo) {
-        log.verbose('master => client: %s %s', msg[1], msg.slice(2).join(' '));
-        io.emit(msg[1], msg.slice(2));
+    this.oscServer().on("/guido/forward", function(msg, rinfo) {
+        if(msg.length < 2) {
+            log.error("forward:", "invalid argument count");
+            return;
+        }
+
+        var path = msg[1];
+        var args = msg.slice(2);
+        log.verbose('master => client: %s %s', path, args.join(' '));
+        io.emit(path, args);
     });
 }
 

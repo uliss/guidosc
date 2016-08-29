@@ -57,6 +57,20 @@ function Client(app_global) {
         if (args.length == 2)
             this.broadcast(['title', args[0], args[1]]);
     });
+
+    this.addCommand('alert', 'shows alert modal window on all connected clients', function(args) {
+        if(args.length != 3) {
+            log.error('alert:', 'invalid argument count');
+            return;
+        }
+
+        var type = args[0];
+        var title = args[1];
+        var subject = args[2];
+
+        log.verbose('%s message: [%s] - %s', type, title, subject);
+        this.broadcast(['alert', type, title, subject]);
+    });
 }
 
 inherits(Client, mod.Module);

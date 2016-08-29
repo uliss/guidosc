@@ -1,5 +1,4 @@
 var menu = require('./menu.js');
-var alerts = require('./alerts.js');
 var page = require('./page.js');
 var ping = require('./ping.js');
 var app_ui = require('./app/app_ui.js');
@@ -19,7 +18,6 @@ mod.records = require('./modules/records.js');
 
 page.init();
 menu.init();
-alerts.init();
 ping.start(4000);
 
 window.app_tone_run = app_tone.main;

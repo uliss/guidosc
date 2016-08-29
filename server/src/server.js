@@ -112,16 +112,6 @@ Server.prototype.bindOsc = function() {
     var osc_server = this.app_global.osc.server;
     var io = this.app_global.io;
 
-    //
-    // this.oscServer().on(node_path("/alert"), function(msg, rinfo) {
-    //     log.verbose('%s message: [%s] - %s', msg[1], msg[2], msg[3]);
-    //     io.emit(cli_path("/alert"), {
-    //         'type': msg[1],
-    //         'title': msg[2],
-    //         'text': msg[3]
-    //     });
-    // });
-    //
     // this.oscServer().on(node_path("/supercollider"), function(msg, rinfo) {
     //     log.verbose('=> client: %s', msg.slice(1));
     //     io.emit(cli_path("/supercollider"), msg.slice(1));

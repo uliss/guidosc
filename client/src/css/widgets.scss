@@ -1,0 +1,72 @@
+.widget_life {
+    text-align: center;
+    button {
+        .glyphicon {
+            margin-right: 5px;
+        }
+
+        margin: 0 auto;
+        display:block;
+    }
+}
+
+.widget_slideshow_control {
+    position: absolute;
+    top: 40vh;
+    width: 97vw;
+
+    $size: 150px;
+
+    button {
+        background-color: transparent;
+        opacity: 0.2;
+        font-size: 50px;
+        height: $size;
+        width: $size;
+    }
+
+    .prev {
+        float: left;
+    }
+
+    .next {
+        float: right;
+    }
+}
+
+.widget_playcontrol {
+    .buttons {
+        margin: 20px auto;
+
+        button {
+            margin: 0 5px;
+
+            span {
+                margin-right: 3px;
+            }
+        }
+
+        .begin, .prev, .next, .end {
+            background-color: transparent;
+        }
+    }
+
+    .display {
+        margin: 0 auto;
+        text-align: center;
+        display: block;
+        font-size: 4em;
+        font-weight: normal;
+        font-family: Verdana;
+
+        .part {
+            display: inline-block;
+            width: 120px;
+            border: 1px solid white;
+        }
+
+        .time {
+            display: inline-block;
+        }
+    }
+}

@@ -1,0 +1,16 @@
+doctype html
+// htmllint indent-width=2 line-end-style=false class-style=dash
+- var HEADER = "UI"
+- var TITLE = "SuperCollider dynamic UI"
+html(lang="en-US")
+    head
+        include pug/meta.pug
+    body
+        include pug/header.pug
+        .container-fluid
+            #ui-elements
+
+        include pug/footer.pug
+
+        script.
+            app_ui_run();

@@ -1,0 +1,41 @@
+.modal.fade#ui_modal_error(tabindex="-1" role="dialog" aria-labelledby="SuperCollider UI")
+    .modal-dialog.modal-lg(role="document")
+        .modal-content
+            .modal-header.alert-danger
+                button.close(type="button" data-dismiss="modal" aria-label="Close")
+                    span(aria-hidden="true") &times;
+                h4.modal-title
+                    span.glyphicon.glyphicon-exclamation-sign(aria-hidden="true")
+                    |&nbsp;
+                    span#ui_modal_error_title
+            .modal-body#ui_modal_error_text
+            .modal-footer
+                button.btn.btn-default(type="button" data-dismiss="modal") Ok
+
+.modal.fade#ui_modal_ok(tabindex="-1" role="dialog" aria-labelledby="SuperCollider UI")
+    .modal-dialog.modal-lg(role="document")
+        .modal-content
+            .modal-header.alert-success
+                button.close(type="button" data-dismiss="modal" aria-label="Close")
+                    span(aria-hidden="true") &times;
+                h4.modal-title
+                    span.glyphicon.glyphicon-ok-sign(aria-hidden="true")
+                    |&nbsp;
+                    span#ui_modal_ok_title
+            .modal-body#ui_modal_ok_text
+            .modal-footer
+                button.btn.btn-default(type="button" data-dismiss="modal") Ok
+
+.modal.fade#ui_modal_info(tabindex="-1" role="dialog" aria-labelledby="SuperCollider UI")
+    .modal-dialog.modal-lg(role="document")
+        .modal-content
+            .modal-header.alert-info
+                button.close(type="button" data-dismiss="modal" aria-label="Close")
+                    span(aria-hidden="true") &times;
+                h4.modal-title
+                    span.glyphicon.glyphicon-info-sign(aria-hidden="true")
+                    |&nbsp;
+                    span#ui_modal_info_title
+            .modal-body#ui_modal_info_text
+            .modal-footer
+                button.btn.btn-default(type="button" data-dismiss="modal") Ok

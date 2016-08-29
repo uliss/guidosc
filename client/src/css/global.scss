@@ -1,0 +1,160 @@
+$color-bg: #60646D;
+$color-ok: #97CE68;
+$color-error: #E01931;
+$color-text: #000;
+$color-warning: #FCB941;
+$color-index: #83D6DE;
+
+@import "vlabel";
+@import "vmetro";
+@import "timer";
+@import "concert";
+@import "ui";
+@import "widgets";
+
+.module {
+    padding: 20px;
+    font-size: 2em;
+    text-align: center;
+    border: $color-bg 1px solid;
+    font-weight: 200;
+    background-color: #3B3C3D;
+    a {
+        color: #DDD;
+    }
+}
+
+html {
+    background-color: $color-bg;
+    position: relative;
+    min-height: 100%;
+
+    body {
+        color: $color-text;
+        background-color: transparent;
+        margin-bottom: 20px;
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            color: lighten($color-text, 20%);
+            /* Set the fixed height of the footer here */
+            height: 20px;
+        }
+    }
+}
+
+
+h1 {
+    // background-color: $color-bg;
+    color: lighten($color-text, 15%);
+    margin-left: 1.3em;
+}
+
+h1 .homelink {
+    float:right;
+    font-size: 1em;
+
+    a, a:hover, a:active, a:visited {
+        color: green ! important;
+    }
+}
+
+#title {
+    margin-left: 1em;
+}
+
+table.info {
+    margin-top: 50px;
+}
+
+.table-vcenter td {
+    vertical-align: middle!important;
+}
+
+#info {
+    font-size: 1.1em;
+    min-height: 100px;
+}
+
+#state-icon {
+    font-size: 2em;
+}
+
+#poll-info {
+    width: 70px;
+    height: 70px;
+}
+
+#pieces {
+    margin-top: 40px;
+}
+
+#pieces li {
+    font-size: 1.5em;
+    height: 3em;
+    margin-top: 30px;
+}
+
+#pieces li .title {
+    font-weight: bold;
+}
+
+.commandButton {
+    position: absolute;
+}
+
+.modal-header {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    -webkit-border-top-left-radius: 6px;
+    -webkit-border-top-right-radius: 6px;
+    -moz-border-radius-topleft: 6px;
+    -moz-border-radius-topright: 6px;
+}
+
+@import "nav";
+
+.center-block {float: none !important}
+
+$MENU_FONT_SIZE: 21px;
+
+.ui_main_dropdown {
+    margin-right: 10px;
+
+    button {
+        opacity: 0.2;
+        font-size: $MENU_FONT_SIZE;
+    }
+
+    .dropdown-menu {
+        font-size: $MENU_FONT_SIZE;
+        background-color: lighten($color-bg, 40%);
+
+        li {
+            .glyphicon {
+                font-size: $MENU_FONT_SIZE - 3px;
+                margin-right: 8px;
+
+            }
+
+            a:hover {
+                background-color: lighten($color-bg, 50%);
+                background-image: none;
+            }
+
+            .display {
+                text-align: right;
+                width: 70px;
+                display: inline-block;
+                margin-left: 10px;
+            }
+        }
+    }
+}
+
+// SPEAKER TESTS
+.speaker-space {
+    height: 200px;
+}

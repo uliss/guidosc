@@ -1,0 +1,133 @@
+.ui-ref {
+    background-color: #007b70 !important;
+}
+.ui {
+    .widget-absolute {
+        position: absolute !important;
+    }
+    .knob-small {
+        width: 120px;
+        height: 120px;
+    }
+    .knob-medium {
+        width: 250px;
+        height: 250px;
+    }
+    .knob-large {
+        width: 350px;
+        height: 350px;
+    }
+}
+#ui-elements {
+    text-align: center;
+    padding: auto;
+}
+.instrument {
+    margin: 10px 0;
+    button {
+        width: 200px;
+    }
+    .slider {
+        margin: 0 20px;
+        display: inline-block;
+        height: 40px;
+    }
+}
+#unit-simpleclick {
+    .nx {
+        vertical-align: middle;
+    }
+    canvas[nx=slider] {
+        margin-left: 20px;
+    }
+    input {
+        display: inline-block !important;
+        vertical-align: middle;
+        margin-left: 20px;
+    }
+}
+button.btn-lg {
+    .glyphicon {
+        margin-right: 3px;
+        // vertical-align: middle;
+    }
+    // vertical-align: middle;
+}
+#unit-recordplayer {
+    max-width: 600px;
+    background-color: lighten($color-bg, 10%);
+    .aplayer-title {
+        font-size: 16px;
+    }
+    .aplayer-author,
+    .aplayer-time {
+        color: rgb(50, 50, 50);
+    }
+}
+#ui-piece-toolbar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding-left: 20px;
+    /* Set the fixed height of the footer here */
+    height: 60px;
+    background-color: transparent;
+    // background-color: rgba(100, 10, 40, 50%);
+    text-align: left;
+    font-size: 14px;
+    .widget_playcontrol {
+        display: inline-block;
+    }
+    > div {
+        display: inline-block;
+    }
+}
+#ui-elements-hidden {
+    .nx[nx="slider"], .nx[nx="toggle"], .nx[nx="dial"] {
+        margin-left: 8px;
+        margin-right: 5px;
+    }
+}
+.ui-layout-box {
+    min-width: 30px;
+    min-height: 30px;
+    padding: 0 5px;
+    display: inline-block;
+    vertical-align: top;
+    margin: 0 10px;
+    .title {
+        text-align: left;
+        font-style: italic;
+        display: block;
+        font-size: 0.8em;
+        color: rgb(40, 40, 40);
+        margin-top: 1px;
+        margin-bottom: 3px;
+        .glyphicon {
+            margin-right: 3px;
+            color: rgb(40, 40, 40);
+        }
+    }
+}
+.ui-layout-hbox {
+    canvas, .ui-layout-vbox {
+        display: inline-block;
+    }
+}
+.ui-layout-vbox {
+    canvas, .ui-layout-hbox {
+        display: block;
+    }
+}
+.ui-box-align-center {
+    .nx {
+        margin: 0 auto !important;
+    }
+}
+.ui-box-align-right > .nx {
+    margin: 0 0 0 auto !important;
+}
+
+.ui-box-align-left > .nx {
+    margin: 0 auto 0 0 !important;
+}

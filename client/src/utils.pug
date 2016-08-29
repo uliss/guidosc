@@ -1,0 +1,34 @@
+doctype html
+// htmllint indent-width=2 line-end-style=false class-style=dash
+- var HEADER = "Utils"
+- var TITLE = "SuperCollider utilities"
+html(lang="en-US")
+    head
+        include pug/meta.pug
+    body
+        include pug/header.pug
+        .container-fluid
+            .row
+                .col-md-offset-2.col-md-10
+                    div.instrument(data-module='instrument' data-name='utils.white-noise')
+                    div.instrument(data-module='instrument' data-name='utils.pink-noise')
+                    div.instrument(data-module='instrument' data-name='utils.sweep-tone')
+                    div.instrument(data-module='instrument' data-name='viola.test'
+                        data-play-param='pos=199,attackTime=3' data-release-param='2')
+
+            .row
+                .col-md-offset-2.col-md-10
+                    div(data-module='simpleclick')
+
+            .row
+                .col-md-offset-2.col-md-10
+                    div(data-module='records')
+        include pug/footer.pug
+
+        script.
+            app_module('instr')('utils.white-noise');
+            app_module('instr')('utils.pink-noise');
+            app_module('instr')('utils.sweep-tone');
+            app_module('instr')('viola.test');
+            app_module('simpleclick')();
+            app_module('records')();

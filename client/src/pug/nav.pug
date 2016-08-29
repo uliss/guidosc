@@ -1,0 +1,77 @@
+nav.navbar.transparent
+    .container-fluid
+        .navbar-header
+            button.navbar-toggle.collapsed(type="button" data-toggle="collapse" data-target="#ui_navbar" aria-expanded="false")
+                span.sr-only Toggle navigation
+                span.icon-bar
+                span.icon-bar
+                span.icon-bar
+            span#nav_ui_connection_indicator.navbar-brand.glyphicon.glyphicon-asterisk(title="NodeJS connection status")
+            a.navbar-brand(href="/", title="Main page")
+                span.glyphicon.glyphicon-home
+        .navbar-collapse.collapse#ui_navbar
+            ul.nav.navbar-nav
+                li
+                    a(href="/timer")
+                        span.glyphicon.glyphicon-time
+                        | &nbsp;
+                        span Timer
+                li
+                    a(href="/vlabel")
+                        span.glyphicon.glyphicon-tag
+                        | &nbsp;
+                        span Label
+                li
+                    a(href="/vmetro")
+                        span.glyphicon.glyphicon-hourglass
+                        | &nbsp;
+                        span Metro
+                li
+                    a(href="/ui")
+                        span.glyphicon.glyphicon-th
+                        | &nbsp;
+                        span UI
+            ul.nav.navbar-nav.navbar-right
+                li
+                    a.nav_ui_free_all(href="#" title="Free all synths")
+                        span.glyphicon.glyphicon-repeat
+                li
+                    a#nav_ui_mute(href="#" title="Mute")
+                        span.glyphicon.glyphicon-volume-up
+                        | &nbsp;
+                        //- span.text Mute
+                li.dropdown
+                    a.dropdown-toggle(href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false")
+                        span.glyphicon.glyphicon-cog
+                        span.caret
+                    ul.dropdown-menu
+                        li#nav_ui_volume_slider
+                            label(for="nav_ui_volume_slider_input") Volume:
+                            input#nav_ui_volume_slider_input(type="text"
+                                name="somename"
+                                data-provide="slider"
+                                data-slider-min="-60"
+                                data-slider-max="0"
+                                data-slider-step="1"
+                                data-slider-value="0"
+                                data-slider-tooltip="always"
+                                data-slider-tooltip-position="top")
+                        li.divider(role="separator")
+                        li
+                            a#nav_ui_record(href="#")
+                                span.glyphicon.glyphicon-record
+                                span.text Record
+                        //- li.divider(role="separator")
+                        li
+                            a#nav_ui_boot(href="#")
+                                span.glyphicon.glyphicon-off
+                                span.text Boot supercollider
+                        li.divider(role="separator")
+                        li
+                            a.nav_ui_free_all(href="#" title="Free all synths")
+                                span.glyphicon.glyphicon-repeat
+                                span.text Free all synths
+                        li
+                            a.nav_ui_stop_all(href="#" title="Stop all synths")
+                                span.glyphicon.glyphicon-stop
+                                span.text Stop all synths and functions

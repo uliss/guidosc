@@ -1,0 +1,76 @@
+$metro-color: #4CD4B0 ! important;
+$bar-color: #E3000E;
+$box-border: 1px solid #DDD;
+$box-width: 300px;
+$box-height: 250px;
+$box-bg-color: #AAA;
+$beat-color: orange;
+$beat-size: 100px;
+
+.vmetro-ref {
+    background-color: $metro-color;
+}
+
+.vmetro {
+    h1 {
+        color: $metro-color;
+    }
+
+    @mixin box {
+        font-size: 160px;
+        width: $box-width;
+        height: $box-height;
+        margin: 30px;
+        border: $box-border;
+        text-align: center;
+        background-color: $box-bg-color;
+    }
+
+    #bar-number {
+        @include box;
+        color: $bar-color;
+        float: left;
+    }
+
+    #mark {
+        @include box;
+        color: blue;
+        float: right;
+    }
+
+    #beats {
+        clear:both;
+        padding-top: 60px;
+        margin: 0 30px;
+        text-align: justify;
+        -ms-text-justify: distribute-all-lines;
+        text-justify: distribute-all-lines;
+    }
+
+    #beats div {
+        font-size: 2em;
+        text-align: center;
+        margin: 10px 0;
+        color: $color-text;
+        background-color: $beat-color;
+        width: $beat-size;
+        height: $beat-size;
+        vertical-align: top;
+        display: inline-block;
+        *display: inline;
+        zoom: 1
+    }
+
+    .stretch {
+        margin: 0;
+        width: 100%;
+        display: inline-block;
+        font-size: 0;
+        line-height: 0
+    }
+
+
+    #beats div.active {
+        background-color: #FA4204;
+    }
+}

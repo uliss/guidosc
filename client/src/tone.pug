@@ -1,0 +1,51 @@
+doctype html
+// htmllint indent-width=2 line-end-style=false class-style=dash
+- var HEADER = "Tone generator"
+- var TITLE = "Tone generator"
+html(lang="en-US")
+    head
+        include pug/meta.pug
+    body
+        include pug/header.pug
+        .container-fluid
+            .row
+                .col-md-offset-2.col-md-4
+                    label Frequency (hz)
+            .row
+                .col-md-offset-2.col-md-5
+                    .btn-group.btn-group-lg.center-block(role="group" aria-label="..." data-toggle="buttons")
+                            label.btn.btn-default(for="frequency_1") 415
+                                input(type="radio" name="tone_freqs" id="frequency_1" value="415" autocomplete="off")
+                            label.btn.btn-default(for="frequency_2") 430
+                                input(type="radio" name="tone_freqs" id="frequency_2" value="430" autocomplete="off")
+                            label.btn.btn-default(for="frequency_3") 440
+                                input(type="radio" name="tone_freqs" id="frequency_3" value="440" autocomplete="off")
+                            label.btn.btn-default.active(for="frequency_4") 442
+                                input(type="radio" name="tone_freqs" id="frequency_4" value="442" autocomplete="off" checked)
+                            label.btn.btn-default(for="frequency_5") 443
+                                input(type="radio" name="tone_freqs" id="frequency_5" value="443" autocomplete="off")
+                .col-md-3
+                    button#playLocal.btn.btn-lg.btn-default(type="button")
+                        span.glyphicon.glyphicon-play-circle
+                        | &nbsp;
+                        span Local
+                    button#playServer.btn.btn-lg.btn-default(type="button")
+                        span.glyphicon.glyphicon-play-circle
+                        | &nbsp;
+                        span Server
+            .row
+                | &nbsp;
+            .row
+                .col-md-offset-2.col-md-2
+                    button#getLatency.btn.btn-lg.btn-warning(type="button")
+                        span.glyphicon.glyphicon-play-time
+                        | &nbsp;
+                        span get latency
+                .col-md-1
+                    label#latencyLabel(for="getLatency")
+
+        script(type='text/javascript').
+            app_tone_run();
+            app_latency_run();
+
+        include pug/footer.pug

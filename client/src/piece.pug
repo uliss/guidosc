@@ -1,0 +1,40 @@
+doctype html
+// htmllint indent-width=2 line-end-style=false class-style=dash id-class-style=dash id-no-dup=true
+- var HEADER = "Piece UI"
+- var TITLE = "Piece UI"
+html(lang="en-US")
+    head
+        include pug/meta.pug
+    body
+        include pug/header.pug
+        .container-fluid
+            .row
+                .col-sm-1
+                    |&nbsp;
+                .col-sm-10
+                    |&nbsp;
+                    #ui-elements
+                .col-sm-1
+                    |&nbsp;
+        #ui-piece-toolbar
+            button.btn.btn-default#ui-piece-options(type="button" data-toggle="modal" data-target="#ui-piece-modal")
+                snap.glyphicon.glyphicon-th
+
+        .modal.fade#ui-piece-modal(tabindex="-1" role="dialog" aria-labelledby="piece-modal-label")
+            .modal-dialog(role="document")
+                .modal-content
+                    .modal-header
+                        button.close(type="button" data-dismiss="modal" aria-label="Close")
+                            span(aria-hidden="true") &times;
+
+                        h4.modal-title#piece-modal-label Sound settings
+                    .modal-body#ui-elements-hidden
+                    .modal-footer
+                        button.btn.btn-lg.btn-info#ui-modal-load(type="button") Load
+                        button.btn.btn-lg.btn-warning#ui-modal-save(type="button") Save
+                        button.btn.btn-lg.btn-default(type="button" data-dismiss="modal") Close
+
+        include pug/footer.pug
+
+        script.
+            window.app_piece_run();

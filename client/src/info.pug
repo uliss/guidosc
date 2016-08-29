@@ -1,0 +1,48 @@
+doctype html
+// htmllint indent-width=2 line-end-style=false class-style=dash id-class-style=dash id-no-dup=true
+- var HEADER = "Information"
+- var TITLE = "Server information"
+html(lang="en-US")
+    head
+        include pug/meta.pug
+    body
+        include pug/header.pug
+        .container-fluid
+            .row
+                .col-md-offset-3.col-md-6#info
+                    h1 Server Information
+                    button(type="button" class="btn" id="poll-info") OFF
+                    table.table.table-striped.info.table-vcenter
+                        tr
+                            td Connected clients:
+                            td.clients
+                        tr
+                            td Remote address:
+                            td.remote-address
+                        tr
+                            td SuperCollider state:
+                            td
+                                span#state-icon
+                        tr
+                            td Running servers:
+                            td#running-servers
+                        tr
+                            td Peak CPU:
+                            td#peak-cpu
+                        tr
+                            td Average CPU:
+                            td#avg-cpu
+                        tr
+                            td Sample rate:
+                            td#sample-rate
+                        tr
+                            td MIDI-devices:
+                            td#midi-devices
+                        tr
+                            td Audio-devices:
+                            td#audio-devices
+                .col-md-3
+
+        include pug/footer.pug
+
+        script $(document).ready(get_info());

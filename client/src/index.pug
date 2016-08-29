@@ -1,0 +1,36 @@
+doctype html
+// htmllint indent-width=2 line-end-style=false class-style=dash id-class-style=dash id-no-dup=true
+- var HEADER = "SuperCollider Web UI"
+- var TITLE = "SuperCollider Web UI"
+html(lang="en-US")
+    head
+        include pug/meta.pug
+    body
+        include pug/header.pug
+        .container-fluid
+            .row
+                .col-md-offset-2.col-md-4.module.timer-ref
+                    a(href="/timer") Timer clock
+                .col-md-4.module.vmetro-ref
+                    a(href="/vmetro") Visual Metronome
+                .col-md-2
+            .row
+                .col-md-offset-2.col-md-4.module.vlabel-ref
+                    a(href="/vlabel") Label
+                .col-md-4.module.concert-ref
+                    a(href="/concert") Concerts
+                .col-md-2
+            .row
+                .col-md-offset-2.col-md-4.module
+                    a(href="/utils") Sound utilities
+                .col-md-4.module
+                    a(href="/info") Information
+                .col-md-2
+            .row
+                .col-md-offset-2.col-md-4.module.ui-ref
+                    a(href="/ui") UI
+                .col-md-4.module
+                    a(href="/tone") Tone generation
+                .col-md-2
+
+        include pug/footer.pug

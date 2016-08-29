@@ -1,0 +1,20 @@
+doctype html
+// htmllint indent-width=2 line-end-style=false class-style=dash
+- var HEADER = "Timer"
+- var TITLE = "NodeJS synchronized Timer"
+html(lang="en-US")
+    head
+        include pug/meta.pug
+    body
+        include pug/header.pug
+        .container-fluid
+            #timer_text --:--:--
+
+            #timerControl
+                button#timerStart.btn.btn-lg.btn-info.timer-button(type="button", value="0") Start
+                button#timerReset.btn.btn-lg.btn-warning.timer-button(type="button", value="0") Reset
+
+        include pug/footer.pug
+
+        script(type='text/javascript').
+            app_timer_run();

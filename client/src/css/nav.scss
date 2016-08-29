@@ -1,0 +1,66 @@
+$nav-bg-light: rgba(white, 0.1);
+$nav-txt-color: #333;
+
+.navbar {
+    background-color: rgba(black, 0.1);
+    background: rgba(black, 0.1);
+    border-color: rgba(black, 0.1);
+    border: 0px;
+    font-size: 20px;
+
+    a {
+        color: $nav-txt-color;
+        background-color: transparent;
+        background: transparent;
+    }
+
+    .icon-bar {
+        background-color: $nav-txt-color;
+    }
+    .navbar-toggle {
+        border-color: $nav-txt-color;
+    }
+
+    a:hover, a:focus, li > a:hover {
+        background: $nav-bg-light;
+    }
+
+    .dropdown-menu {
+        background: $color-bg;
+        .text {
+            margin-left: 5px;
+        }
+    }
+
+    .divider { background-color: #555 }
+}
+
+.navbar-nav > li > a:focus {
+    background: $nav-bg-light;
+}
+
+#nav_ui_volume_slider {
+    margin: 10px 20px;
+    padding-bottom: 5px;
+    .slider {
+        width: 200px;
+        margin-right: 10px;
+        .slider-selection {
+            background: #BABABA;
+        }
+        .slider-handle {
+            background: #3A3A3A;
+        }
+    }
+}
+
+#nav_ui_connection_indicator {
+    color: $nav-txt-color;
+}
+
+.nav_ui_indicator_connected{
+    color: $color-ok !important;
+}
+.nav_ui_indicator_disconnected {
+    color: #D33257 !important;
+}

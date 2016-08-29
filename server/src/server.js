@@ -1,30 +1,47 @@
 var utils = require('./utils');
-var node_path = utils.node_path;
-var cli_path = utils.cli_path;
-var sc_path = utils.sc_path;
-var log = utils.log();
+var log = utils.log('server');
+var mod = require('./module.js');
+var inherits = require('inherits');
 
 var sync_dict = {};
 
-function addAutoSync(path) { sync_dict[path] = true; }
-function removeAutoSync(path) { delete sync_dict[path]; }
-function printAutoSync() { console.log(JSON.stringify(sync_dict, null, 2)); }
+function Server(app_global) {
+    mod.Module.call(this, app_global, 'server');
 
-// URL -> server path (without '.html' extension)
-const MODULE_ROUTES = {
-    "/speakers": "/speakers",
-    "/info": "/info",
-    "/vlabel": "/vlabel",
-    "/vmetro": "/vmetro",
-    "/concert": "/concert",
-    "/piece": "/piece",
-    "/ui": "/ui",
-    "/timer": "/timer",
-    "/tone": "/tone",
-    "/tests": "/tests",
-    "/utils": "/utils",
-    "/": "/index"
-};
+    // URL -> server path (without '.html' extension)
+    this.MODULE_ROUTES = {
+        "/speakers": "/speakers",
+        "/info": "/info",
+        "/vlabel": "/vlabel",
+        "/vmetro": "/vmetro",
+        "/concert": "/concert",
+        "/piece": "/piece",
+        "/ui": "/ui",
+        "/timer": "/timer",
+        "/tone": "/tone",
+        "/tests": "/tests",
+        "/utils": "/utils",
+        "/": "/index"
+    };
+
+    this.registerModules();
+    this.bindHttp();
+    this.bindOsc();
+}
+
+inherits(Server, mod.Module);
+
+function addAutoSync(path) {
+    sync_dict[path] = true;
+}
+
+function removeAutoSync(path) {
+    delete sync_dict[path];
+}
+
+function printAutoSync() {
+    console.log(JSON.stringify(sync_dict, null, 2));
+}
 
 function getHttp(res, path) {
     log.debug('URL request:', path);
@@ -38,31 +55,29 @@ function getHttp(res, path) {
     });
 }
 
-function registerModules(app_global) {
-    for (url in MODULE_ROUTES) {
-        app_global.app.get(url, function(req, res) {
+Server.prototype.modulePath = function(name) {
+    return this.MODULE_ROUTES[name] + '.html';
+}
+
+Server.prototype.registerModules = function() {
+    var self = this;
+    for (url in this.MODULE_ROUTES) {
+        this.app().get(url, function(req, res) {
             var req_url = req['path'];
-            var path = MODULE_ROUTES[req_url] + '.html';
+            var path = self.modulePath(req_url);
             // sync registered modules
-            if (sync_dict[req_url] !== undefined) {
-                var osc_path = sc_path("/app/sync") + req_url;
-                app_global.osc.client.send(osc_path);
-            }
+            // if (sync_dict[req_url] !== undefined) {
+            //     var osc_path = sc_path("/app/sync") + req_url;
+            //     this.app_global.osc.client.send(osc_path);
+            // }
 
             getHttp(res, path);
         });
     }
 }
 
-function init(app_global) {
-    bindHttp(app_global);
-    bindOsc(app_global);
-    process.env.PATH = process.env.PATH + ":/usr/local/bin";
-}
-
-function bindHttp(app_global) {
-    registerModules(app_global);
-    var app = app_global.app;
+Server.prototype.bindHttp = function() {
+    var app = this.app_global.app;
 
     // serve CSS files
     app.get('/css/*.css', function(req, res) {
@@ -93,79 +108,55 @@ function bindHttp(app_global) {
     });
 }
 
-function bindOsc(app_global) {
-    var osc_server = app_global.osc.server;
-    var io = app_global.io;
+Server.prototype.bindOsc = function() {
+    var osc_server = this.app_global.osc.server;
+    var io = this.app_global.io;
 
-    osc_server.on(node_path("/help"), function(msg, rinfo) {
-        console.log("Available commands:\n    ");
-        console.log([
-            "echo",
-            "help",
-            "css",
-            "redirect",
-            "reload",
-            "title",
-            "alert"
-        ].sort().map(function(v) {
-            return node_path("/" + v)
-        }).join("\n    "));
-    });
-
-    osc_server.on(node_path("/echo"), function(msg, rinfo) {
-        console.log(msg[1]);
-    });
-
-    osc_server.on(node_path("/css"), function(msg, rinfo) {
-        log.verbose('set css: %s { %s: %s }', msg[1], msg[2], msg[3]);
-        io.emit(cli_path("/css"), [msg[1], msg[2], msg[3]]);
-    });
-
-    osc_server.on(node_path("/redirect"), function(msg, rinfo) {
-        log.verbose('redirect to:', msg[1]);
-        io.emit(cli_path("/redirect"), msg[1]);
-    });
-
-    osc_server.on(node_path("/reload"), function(msg, rinfo) {
-        log.verbose('reloading page...');
-        io.emit(cli_path("/reload"), msg[1]);
-    });
-
-    osc_server.on(node_path("/title"), function(msg, rinfo) {
-        log.verbose('set title:', msg[1]);
-        io.emit(cli_path("/title"), msg[1]);
-    });
-
-    osc_server.on(node_path("/alert"), function(msg, rinfo) {
-        log.verbose('%s message: [%s] - %s', msg[1], msg[2], msg[3]);
-        io.emit(cli_path("/alert"), {
-            'type': msg[1],
-            'title': msg[2],
-            'text': msg[3]
-        });
-    });
-
-    osc_server.on(node_path("/supercollider"), function(msg, rinfo) {
-        log.verbose('=> client: %s', msg.slice(1));
-        io.emit(cli_path("/supercollider"), msg.slice(1));
-    });
-
-    osc_server.on(node_path("/forward"), function(msg, rinfo) {
-        log.verbose('supercollider => client: %s %s', msg[1], msg.slice(2).join(' '));
-        io.emit(msg[1], msg.slice(2));
-    });
-
-    osc_server.on(node_path("/app/sync/add"), function(msg, rinfo) {
-        addAutoSync(msg[1]);
-    });
-
-    osc_server.on(node_path("/app/sync/remove"), function(msg, rinfo) {
-        removeAutoSync(msg[1]);
-    });
-
-    osc_server.on(node_path("/app/sync/print"), function(msg, rinfo) {
-        printAutoSync();
-    });
+    // this.oscServer().on(node_path("/redirect"), function(msg, rinfo) {
+    //     log.verbose('redirect to:', msg[1]);
+    //     io.emit(cli_path("/redirect"), msg[1]);
+    // });
+    //
+    // this.oscServer().on(node_path("/reload"), function(msg, rinfo) {
+    //     log.verbose('reloading page...');
+    //     io.emit(cli_path("/reload"), msg[1]);
+    // });
+    //
+    // this.oscServer().on(node_path("/title"), function(msg, rinfo) {
+    //     log.verbose('set title:', msg[1]);
+    //     io.emit(cli_path("/title"), msg[1]);
+    // });
+    //
+    // this.oscServer().on(node_path("/alert"), function(msg, rinfo) {
+    //     log.verbose('%s message: [%s] - %s', msg[1], msg[2], msg[3]);
+    //     io.emit(cli_path("/alert"), {
+    //         'type': msg[1],
+    //         'title': msg[2],
+    //         'text': msg[3]
+    //     });
+    // });
+    //
+    // this.oscServer().on(node_path("/supercollider"), function(msg, rinfo) {
+    //     log.verbose('=> client: %s', msg.slice(1));
+    //     io.emit(cli_path("/supercollider"), msg.slice(1));
+    // });
+    //
+    // this.oscServer().on(node_path("/forward"), function(msg, rinfo) {
+    //     log.verbose('supercollider => client: %s %s', msg[1], msg.slice(2).join(' '));
+    //     io.emit(msg[1], msg.slice(2));
+    // });
+    //
+    // this.oscServer().on(node_path("/app/sync/add"), function(msg, rinfo) {
+    //     addAutoSync(msg[1]);
+    // });
+    //
+    // this.oscServer().on(node_path("/app/sync/remove"), function(msg, rinfo) {
+    //     removeAutoSync(msg[1]);
+    // });
+    //
+    // this.oscServer().on(node_path("/app/sync/print"), function(msg, rinfo) {
+    //     printAutoSync();
+    // });
 }
 
 function bindSocket(app_global, socket) {
@@ -201,8 +192,8 @@ function bindSocket(app_global, socket) {
     });
 }
 
-function notifyOnBoot(app_global) {
-    app_global.osc.client.send(sc_path("/control"), 'nodejs_boot');
+Server.prototype.notifyOnBoot = function() {
+    this.oscClient().send(this.path(), 'nodejs_boot');
 }
 
 function notifyOnClientConnect(app_global, socket) {
@@ -222,8 +213,8 @@ function notifyOnClientDisconnect(app_global, socket) {
     });
 }
 
-module.exports.init = init;
 module.exports.bindSocket = bindSocket;
-module.exports.notifyOnBoot = notifyOnBoot;
 module.exports.notifyOnClientConnect = notifyOnClientConnect;
 module.exports.notifyOnClientDisconnect = notifyOnClientDisconnect
+
+module.exports = Server;

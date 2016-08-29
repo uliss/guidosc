@@ -7,9 +7,10 @@ var osc = require('node-osc');
 var npid = require('npid');
 var timer = require('./src/timer');
 var utils = require('./src/utils');
-var mod_server = require('./src/server');
+var Server = require('./src/server');
 var Ping = require('./src/ping');
 var Manager = require('./src/manager');
+var Client = require('./src/client.js');
 var mod_ui = require('./src/ui');
 var sounds = require('./src/sound.js');
 
@@ -50,11 +51,12 @@ try {
     APP_GLOBAL.osc.server = oscServer;
     APP_GLOBAL.osc.client = oscClient;
 
-    mod_server.init(APP_GLOBAL);
+    var server = new Server(APP_GLOBAL);
     // mod_ui.init(APP_GLOBAL);
     var client_manager = new Manager(APP_GLOBAL);
     var ping = new Ping(APP_GLOBAL);
     var timer = new timer.ServerTimer(APP_GLOBAL);
+    var client = new Client(APP_GLOBAL);
     // sounds.init();
 
     io.on('connection', function(socket) {
@@ -72,7 +74,7 @@ try {
         log.info('listening HTTP on *:' + NODE_PORT);
         log.info('listening OSC on *:' + OSC_IN_PORT);
         log.info('sending OSC to localhost:' + OSC_OUT_PORT);
-        mod_server.notifyOnBoot(APP_GLOBAL);
+        server.notifyOnBoot();
     });
 } catch (err) {
     log.error(err.message);

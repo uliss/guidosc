@@ -202,6 +202,12 @@ Module.prototype.broadcast = function(msg, type) {
                 log.debug("broadcast message: %s %s", broadcast_path, msg);
             }
             break;
+        case 'socket':
+            {
+                this.app_global.io.emit(broadcast_path, msg);
+                log.debug("broadcast message: %s %s", broadcast_path, msg);
+            }
+            break;
         default:
             log.error("unknown broadcast type:", type);
             break;

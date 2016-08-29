@@ -1,9 +1,26 @@
 var server = require('./server.js');
+var PATH = '/guido/module/client/broadcast';
 
 function page_handle() {
-    // handle css
-    server.on('/cli/css', function(msg){
-        $(msg[0]).css(msg[1], msg[2]);
+    server.on(PATH, function(msg) {
+        msg = JSON.parse(msg);
+        var cmd = msg[0];
+
+        switch (msg[0]) {
+            case 'css':
+                {
+                    console.log(msg);
+                    if (msg.length == 4)
+                        $(msg[1]).css(msg[2], msg[3]);
+                    if (msg.length == 3)
+                        $(msg[1]).css(JSON.parse(msg[2]));
+                }
+                break;
+            default:
+                {
+                    console.log("unknown command: " + cmd + msg);
+                }
+        }
     });
 
     // handle redirect
@@ -13,7 +30,7 @@ function page_handle() {
     });
 
     // handle reload
-    server.on('/cli/reload', function(){
+    server.on('/cli/reload', function() {
         window.location.reload();
     });
 

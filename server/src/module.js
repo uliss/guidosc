@@ -64,34 +64,38 @@ Module.prototype.registerOSCHandler = function() {
     var self = this;
 
     this.app_global.osc.server.on(path, function(msg) {
-        var cmd = msg[1];
-        var args = msg.slice(2);
-        if (!cmd) { // empty command
-            log.error("No command given");
-            log.error("Usage: '%s CMD [ARGS]'", path);
-            log.error("Send: '%s help' to get full list", path);
-            return;
-        };
+        try {
+            var cmd = msg[1];
+            var args = msg.slice(2);
+            if (!cmd) { // empty command
+                log.error("No command given");
+                log.error("Usage: '%s CMD [ARGS]'", path);
+                log.error("Send: '%s help' to get full list", path);
+                return;
+            };
 
-        if (!self.commands[cmd]) { // command not found in list
-            log.error("Invalid command:", cmd);
-            log.error("Send: '%s help' to get full list", path);
-            return;
-        }
-
-        self.runCommand(cmd, args, function(data) {
-            // removed undefined
-            var arg_list = [path, cmd, data].filter(function(n) {
-                return n != undefined;
-            });
-
-            // send back
-            var opts = parseOscOptions(args);
-            if (opts.back) {
-                var $this = self.app_global.osc.client;
-                $this.send.apply($this, arg_list);
+            if (!self.commands[cmd]) { // command not found in list
+                log.error("Invalid command:", cmd);
+                log.error("Send: '%s help' to get full list", path);
+                return;
             }
-        });
+
+            self.runCommand(cmd, args, function(data) {
+                // removed undefined
+                var arg_list = [path, cmd, data].filter(function(n) {
+                    return n != undefined;
+                });
+
+                // send back
+                var opts = parseOscOptions(args);
+                if (opts.back) {
+                    var $this = self.app_global.osc.client;
+                    $this.send.apply($this, arg_list);
+                }
+            });
+        } catch (e) {
+            log.error("registerOSCHandler exception:", e.message);
+        }
     });
 };
 
@@ -184,44 +188,31 @@ Module.prototype.onOSC = function(path, func) {
     this.app_global.osc.server.on(path, func);
 };
 
-Module.prototype.socketSendToAll = function(args) {
-    log.debug("socketSendToAll: %s", args, {});
-    this.io().emit(this.path(), args);
-};
-
-Module.prototype.socketSendToOthers = function(socket, args) {
-    log.debug("socketSendToOthers: %s", args, {});
-    socket.broadcast.emit(this.path(), args);
-};
-
-Module.prototype.sendToMaster = function() {
-    var args = Array.prototype.slice.call(arguments, 0);
-    args.unshift(this.path());
-    log.debug("sendToMaster: %j", args, {});
-    this.app_global.osc.client.send.apply(this.app_global.osc.client, args);
-};
-
 Module.prototype.broadcast = function(msg, type) {
-    msg = JSON.stringify(msg);
-    var broadcast_path = this.path() + "/broadcast";
-    if (!type) type = 'all';
-    switch (type) {
-        case 'all':
-            {
-                this.app_global.io.emit(broadcast_path, msg);
-                this.app_global.osc.client.send(broadcast_path, msg);
-                log.debug("broadcast message: %s %s", broadcast_path, msg);
-            }
-            break;
-        case 'socket':
-            {
-                this.app_global.io.emit(broadcast_path, msg);
-                log.debug("broadcast message: %s %s", broadcast_path, msg);
-            }
-            break;
-        default:
-            log.error("unknown broadcast type:", type);
-            break;
+    try {
+        msg = JSON.stringify(msg);
+        var broadcast_path = this.path() + "/broadcast";
+        if (!type) type = 'all';
+        switch (type) {
+            case 'all':
+                {
+                    this.app_global.io.emit(broadcast_path, msg);
+                    this.app_global.osc.client.send(broadcast_path, msg);
+                    log.debug("broadcast message: %s %s", broadcast_path, msg);
+                }
+                break;
+            case 'socket':
+                {
+                    this.app_global.io.emit(broadcast_path, msg);
+                    log.debug("broadcast message: %s %s", broadcast_path, msg);
+                }
+                break;
+            default:
+                log.error("unknown broadcast type:", type);
+                break;
+        }
+    } catch (e) {
+        log.error("broadcast exception:", e.what);
     }
 }
 

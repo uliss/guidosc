@@ -1,20 +1,6 @@
 var winston = require("winston");
 var winston_config = require('winston/lib/winston/config');
 
-var options = {
-    verbose: 1
-};
-
-function postmsg(msg, prefix = '[NodeJS]: ') {
-    console.log(prefix + msg);
-}
-
-function postln(msg) {
-    if (options['verbose'] != 0) {
-        postmsg(msg);
-    }
-}
-
 Number.prototype.toHHMMSS = function() {
     var seconds = Math.floor(this),
         hours = Math.floor(seconds / 3600);
@@ -33,7 +19,6 @@ Number.prototype.toHHMMSS = function() {
     }
     return hours + ':' + minutes + ':' + seconds;
 };
-
 
 function sc_path(path) {
     return "/sc" + path;
@@ -62,7 +47,7 @@ var logger = function(moduleName) {
                 handleExceptions: true,
                 humanReadableUnhandledException: true,
                 formatter: function(options) {
-                    var output = '[NodeUI:';
+                    var output = '[GuidOSC:';
                     output += winston_config.colorize(options.level, options.level) + '] ';
                     output += (options.label !== null) ? '(' + options.label + ') ' : ''
                     output += (undefined !== options.message ? options.message : '');
@@ -77,8 +62,6 @@ var logger = function(moduleName) {
 
 logger.exitOnError = false;
 
-module.exports.postmsg = postmsg;
-module.exports.postln = postln;
 module.exports.sc_path = sc_path;
 module.exports.node_path = node_path;
 module.exports.cli_path = cli_path;

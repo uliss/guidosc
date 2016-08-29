@@ -47,18 +47,6 @@ function Server(app_global) {
 
 inherits(Server, mod.Module);
 
-function addAutoSync(path) {
-    sync_dict[path] = true;
-}
-
-function removeAutoSync(path) {
-    delete sync_dict[path];
-}
-
-function printAutoSync() {
-    console.log(JSON.stringify(sync_dict, null, 2));
-}
-
 function getHttp(res, path) {
     log.debug('URL request:', path);
     res.sendFile(path, {

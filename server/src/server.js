@@ -29,11 +29,11 @@ const MODULE_ROUTES = {
 function getHttp(res, path) {
     log.debug('URL request:', path);
     res.sendFile(path, {
-        root: __dirname + '/../build/'
+        root: __dirname + '/../../build/'
     }, function(err) {
         if (err) {
             log.warn('file not exists:', path);
-            res.status(err.status).end();
+            res.status(err.status).send('Not found: ' + __dirname + path);
         }
     });
 }

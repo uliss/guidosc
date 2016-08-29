@@ -80,10 +80,17 @@ Module.prototype.registerOSCHandler = function() {
         }
 
         self.runCommand(cmd, args, function(data) {
+            // removed undefined
+            var arg_list = [path, cmd, data].filter(function(n) {
+                return n != undefined;
+            });
+
             // send back
             var opts = parseOscOptions(args);
-            if (opts.back)
-                self.app_global.osc.client.send(path, cmd, data);
+            if (opts.back) {
+                var $this = self.app_global.osc.client;
+                $this.send.apply($this, arg_list);
+            }
         });
     });
 };

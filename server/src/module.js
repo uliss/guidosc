@@ -113,7 +113,11 @@ Module.prototype.bindSocket = function(socket) {
         log.debug("socket command: '%s'", cmd);
         var result = self.commands[cmd].call(self, opts);
         if (result) {
-            socket.emit(self.path(), result);
+            var answer = {};
+            answer[cmd] = result;
+            answer.module = self.name;
+            answer.path = self.path();
+            socket.emit(self.path(), answer);
         }
     });
 };

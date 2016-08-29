@@ -3,8 +3,6 @@ var log = utils.log('server');
 var mod = require('./module.js');
 var inherits = require('inherits');
 
-var sync_dict = {};
-
 function Server(app_global) {
     mod.Module.call(this, app_global, 'server');
 
@@ -24,8 +22,22 @@ function Server(app_global) {
         "/": "/index"
     };
 
+    this.sync_pages = {};
+
     this.addCommand('pages', 'list available pages', function(msg) {
         return Object.keys(this.MODULE_ROUTES);
+    });
+
+    this.addCommand('sync_add', 'adds given url to sync list', function(args) {
+        this.sync_pages[args[0]] = true;
+    });
+
+    this.addCommand('sync_remove', 'remove given url to sync list', function(args) {
+        delete this.sync_pages[args[0]];
+    });
+
+    this.addCommand('sync_list', 'get sync list', function(args) {
+        return Object.keys(this.sync_pages);
     });
 
     this.registerModules();
@@ -70,10 +82,9 @@ Server.prototype.registerModules = function() {
             var req_url = req['path'];
             var path = self.modulePath(req_url);
             // sync registered modules
-            // if (sync_dict[req_url] !== undefined) {
-            //     var osc_path = sc_path("/app/sync") + req_url;
-            //     this.app_global.osc.client.send(osc_path);
-            // }
+            if (self.sync_dict[req_url] !== undefined) {
+                self.oscClient().send("/sync" + req_url);
+            }
 
             getHttp(res, path);
         });

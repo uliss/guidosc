@@ -3,6 +3,8 @@ var log = utils.log('server');
 var mod = require('./module.js');
 var inherits = require('inherits');
 
+const VERSION = "0.0.1";
+
 function Server(app_global) {
     mod.Module.call(this, app_global, 'server');
 
@@ -38,6 +40,10 @@ function Server(app_global) {
 
     this.addCommand('sync_list', 'get sync list', function(args) {
         return Object.keys(this.sync_pages);
+    });
+
+    this.addCommand('version', 'returns server version', function() {
+        return VERSION;
     });
 
     this.registerModules();
@@ -123,18 +129,6 @@ Server.prototype.bindOsc = function() {
     // this.oscServer().on(node_path("/forward"), function(msg, rinfo) {
     //     log.verbose('supercollider => client: %s %s', msg[1], msg.slice(2).join(' '));
     //     io.emit(msg[1], msg.slice(2));
-    // });
-    //
-    // this.oscServer().on(node_path("/app/sync/add"), function(msg, rinfo) {
-    //     addAutoSync(msg[1]);
-    // });
-    //
-    // this.oscServer().on(node_path("/app/sync/remove"), function(msg, rinfo) {
-    //     removeAutoSync(msg[1]);
-    // });
-    //
-    // this.oscServer().on(node_path("/app/sync/print"), function(msg, rinfo) {
-    //     printAutoSync();
     // });
 }
 

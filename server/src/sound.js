@@ -1,34 +1,38 @@
 var fs = require('fs');
-var utils = require('./utils.js');
-var node_path = utils.node_path;
-var cli_path = utils.cli_path;
-var soundDir = __dirname + '/../build/sound';
+var inherits = require('inherits');
+var utils = require('./utils');
+var mod = require('./module.js');
+var log = utils.log('sound');
 
-function init() {
+const SOUND_DIR = __dirname + '/../../build/sound';
 
-}
+function Sound(app_global) {
+    mod.Module.call(this, app_global, 'sound');
 
-function is_record(fname) {
-    return fname.substr(-5) === '.wav' && fname.substr(3) === "rec";
-}
+    this.addCommand('ls', 'get list of recordings', function() {
+        try {
+            var files = fs.readdirSync(SOUND_DIR);
+            if (!files) files = [];
 
-function bindSocket(io, socket) {
-    socket.on(node_path("/records/ls"), function() {
-        fs.readdir(soundDir, function(err, files) {
-            if (files === undefined)
-                files = [];
-
-            files.filter(is_record);
-            io.to(socket.id).emit(cli_path("/records/ls"), files);
-        });
+            return files.filter(function(f) {
+                return f.substr(-4) === '.wav';
+            });
+        } catch (e) {
+            log.error("ls exception:", e.message);
+            return [];
+        }
     });
 
-    socket.on(node_path("/records/playlist"), function() {
-        fs.readdir(soundDir, function(err, files) {
+    this.addCommand('playlist', 'returns JSON playlist', function(args) {
+        try {
+            var files = fs.readdirSync(SOUND_DIR);
             if (files === undefined)
                 files = [];
 
-            files.filter(is_record);
+            files = files.filter(function(f) {
+                return f.substr(-4) === '.wav';
+            });
+
             files.sort();
             files.reverse();
 
@@ -42,11 +46,14 @@ function bindSocket(io, socket) {
                 });
             });
 
-
-            io.to(socket.id).emit(cli_path("/records/playlist"), playlist);
-        });
+            return JSON.stringify(playlist);
+        } catch (e) {
+            log.error("playlist:", e.message);
+            return {};
+        }
     });
 }
 
-module.exports.init = init;
-module.exports.bindSocket = bindSocket;
+inherits(Sound, mod.Module);
+
+module.exports = Sound;

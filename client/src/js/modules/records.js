@@ -1,15 +1,12 @@
 var aplayer = require('APlayer');
 var server = require('../server.js');
 var utils = require('../utils.js');
-var node_path = utils.node_path;
-var cli_path = utils.cli_path;
 
 
 function promise_records_get() {
     return new Promise(function(resolve, reject) {
-        server.send(node_path("/records/playlist"));
-        server.on(cli_path("/records/playlist"), function(msg) {
-            resolve(msg);
+        server.send("/guido/module/sound", "playlist", function(data) {
+            resolve(JSON.parse(data));
         });
 
         setTimeout(function() {

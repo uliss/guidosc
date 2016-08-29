@@ -30,22 +30,22 @@ function page_handle() {
                 window.location.href = msg[1];
             }
             break;
+            case 'title': {
+                if(msg.length == 2) {
+                    $("#title").text(msg[1]);
+                }
+
+                if(msg.length == 3) {
+                    $("#title").text(msg[1]);
+                    document.title = msg[2];
+                }
+            }
+            break;
             default:
                 {
                     console.log("unknown command: " + cmd + msg);
                 }
         }
-    });
-
-    // handle reload
-    server.on('/cli/reload', function() {
-        window.location.reload();
-    });
-
-    // handle title
-    server.on('/cli/title', function(msg) {
-        console.log(msg);
-        $("#title").text(msg);
     });
 }
 

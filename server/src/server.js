@@ -113,11 +113,6 @@ Server.prototype.bindOsc = function() {
     var io = this.app_global.io;
 
     //
-    // this.oscServer().on(node_path("/title"), function(msg, rinfo) {
-    //     log.verbose('set title:', msg[1]);
-    //     io.emit(cli_path("/title"), msg[1]);
-    // });
-    //
     // this.oscServer().on(node_path("/alert"), function(msg, rinfo) {
     //     log.verbose('%s message: [%s] - %s', msg[1], msg[2], msg[3]);
     //     io.emit(cli_path("/alert"), {

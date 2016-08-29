@@ -36,13 +36,26 @@ function Client(app_global) {
     });
 
     this.addCommand('redirect', 'redirects all connected clients to other URL', function(args) {
-        if(args.length < 1) {
+        if (args.length < 1) {
             log.error('redirect:', 'no URL given');
             return;
         }
 
         log.verbose('redirect to:', args[0]);
         this.broadcast(['redirect', args[0]]);
+    });
+
+    this.addCommand('title', 'set page and window title on connected clients', function(args) {
+        if (args.length == 0) {
+            log.error("none title given");
+            return;
+        }
+
+        log.verbose('title:', args);
+        if (args.length == 1)
+            this.broadcast(['title', args[0]]);
+        if (args.length == 2)
+            this.broadcast(['title', args[0], args[1]]);
     });
 }
 

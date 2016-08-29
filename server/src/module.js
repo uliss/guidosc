@@ -18,6 +18,8 @@ function Module(app_global, name) {
 
         // chop last "\n"
         log.info(msg.slice(0, -1));
+
+        return Object.keys(this.commands);
     });
 }
 

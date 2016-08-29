@@ -125,12 +125,6 @@ Server.prototype.bindOsc = function() {
     var osc_server = this.app_global.osc.server;
     var io = this.app_global.io;
 
-    // this.oscServer().on("/supercollider", function(msg, rinfo) {
-    //     log.warn("IMPLEMENT ME!");
-    //     log.verbose('=> client: %s', msg.slice(1));
-    //     // io.emit(cli_path("/supercollider"), msg.slice(1));
-    // });
-
     this.oscServer().on("/guido/forward", function(msg, rinfo) {
         if (msg.length < 2) {
             log.error("forward:", "invalid argument count");
@@ -146,16 +140,6 @@ Server.prototype.bindOsc = function() {
 
 Server.prototype.bindSocket = function(socket) {
     mod.Module.prototype.bindSocket.call(this, socket);
-    // socket.on(node_path("/supercollider"), function(msg) {
-    //     log.verbose('=> supercollider: %s', msg);
-    //     if (msg.length == 1) {
-    //         osc_client.send(sc_path("/control"), msg[0]);
-    //     }
-    //     if (msg.length == 2) {
-    //         osc_client.send(sc_path("/control"), msg[0], msg[1]);
-    //     }
-    // });
-    //
     var self = this;
 
     socket.on("/guido/forward", function(msg) {

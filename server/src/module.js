@@ -154,9 +154,13 @@ Module.prototype.bindSocket = function(socket) {
     var self = this;
 
     socket.on(path, function(msg, callback) {
-        var cmd = parseMsg(msg);
-        if (!self.checkCommand(cmd.name)) return;
-        self.runCommand(cmd.name, cmd.args, callback);
+        try {
+            var cmd = parseMsg(msg);
+            if (!self.checkCommand(cmd.name)) return;
+            self.runCommand(cmd.name, cmd.args, callback);
+        } catch (e) {
+            log.error("bindSocket exception:", e.message);
+        }
     });
 };
 

@@ -85,7 +85,7 @@ function page_handle() {
                 handle_css(msg);
                 break;
             case 'reload':
-                hangle_reload(msg);
+                handle_reload(msg);
                 break;
             case 'redirect':
                 handle_redirect(msg);

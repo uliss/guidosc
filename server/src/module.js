@@ -225,7 +225,7 @@ Module.prototype.oscSendArray = function(path, args) {
 };
 
 function toString(array) {
-    if(!Array.isArray(array)) return array;
+    if (!Array.isArray(array)) return array;
 
     return (array.length == 1) ? array : array.join(' ');
 }
@@ -240,8 +240,8 @@ Module.prototype.broadcastSocket = function(msg) {
 Module.prototype.broadcastOsc = function(msg) {
     var args = Array.prototype.slice.call(arguments, 0);
     var broadcast_path = this.path() + "/broadcast";
-    // this.app_global.osc.client.send(broadcast_path, msg);
-    // log.debug("broadcastSocket:", "message: %s %s", broadcast_path, args.join(' '));
+    log.debug("broadcastSocket:", "message: %s %s", broadcast_path, toString(args));
+    this.oscSendArray(broadcast_path, args);
 };
 
 Module.prototype.broadcast = function(msg, type) {

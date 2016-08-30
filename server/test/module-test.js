@@ -122,6 +122,20 @@ describe('ModuleTest', function() {
         expect(io_emit.lastCall.args).to.be.deep.equal(["/guido/module/t1/broadcast", [1, 2, [3, 4]]]);
     });
 
+    it('broadcastOsc', function() {
+        var m = new Module(CONTEXT, 't1');
+
+        m.broadcastOsc();
+        expect(osc_send.called).to.be.true;
+        expect(osc_send.lastCall.args).to.be.deep.equal(["/guido/module/t1/broadcast"]);
+
+        m.broadcastOsc(1);
+        expect(osc_send.lastCall.args).to.be.deep.equal(["/guido/module/t1/broadcast", 1]);
+
+        m.broadcastOsc(1, 2, [3, 4]);
+        expect(osc_send.lastCall.args).to.be.deep.equal(["/guido/module/t1/broadcast", 1, 2, [3, 4]]);
+    });
+
     it('parseOscOptions', function() {
         var p;
         expect(t.parseOscOptions()).to.be.empty;

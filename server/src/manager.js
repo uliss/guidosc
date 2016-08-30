@@ -18,16 +18,20 @@ inherits(Manager, mod.Module);
 
 Manager.prototype.bindClient = function(socket) {
     var addr = socket.request.connection.remoteAddress.substring(7);
-    if(!addr) addr = "127.0.0.1";
+    if (!addr) addr = "127.0.0.1";
 
     log.verbose('client %s connected', addr);
-    this.clients[addr] = { sock: socket };
+    this.clients[addr] = {
+        sock: socket
+    };
+    this.oscClient().send(this.path(), "connected", addr);
 
     this.bindSocket(socket);
 
     var self = this;
     socket.on('disconnect', function() {
         log.verbose('client %s disconnected', addr);
+        self.oscClient().send(self.path(), "disconnected", addr);
         delete self.clients[addr];
     });
 };

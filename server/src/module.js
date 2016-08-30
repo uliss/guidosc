@@ -277,6 +277,7 @@ Module.prototype.oscSendArray = function(path, args) {
 };
 
 function toString(array) {
+    if(!Array.isArray(array)) return array;
     return (array.length == 1) ? array : array.join(' ');
 }
 

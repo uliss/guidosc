@@ -108,6 +108,20 @@ describe('ModuleTest', function() {
         expect(osc_send.lastCall.args).to.be.deep.equal(["/path",1,2,3]);
     });
 
+    it('broadcastSocket', function() {
+        var m = new Module(CONTEXT, 't1');
+
+        m.broadcastSocket();
+        expect(io_emit.called).to.be.true;
+        expect(io_emit.lastCall.args).to.be.deep.equal(["/guido/module/t1/broadcast", []]);
+
+        m.broadcastSocket(1);
+        expect(io_emit.lastCall.args).to.be.deep.equal(["/guido/module/t1/broadcast", [1]]);
+
+        m.broadcastSocket(1, 2, [3, 4]);
+        expect(io_emit.lastCall.args).to.be.deep.equal(["/guido/module/t1/broadcast", [1, 2, [3, 4]]]);
+    });
+
     it('parseOscOptions', function() {
         var p;
         expect(t.parseOscOptions()).to.be.empty;

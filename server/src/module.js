@@ -225,13 +225,13 @@ Module.prototype.oscSendArray = function(path, args) {
 };
 
 function toString(array) {
+    if(!Array.isArray(array)) return array;
+
     return (array.length == 1) ? array : array.join(' ');
 }
 
 Module.prototype.broadcastSocket = function(msg) {
     var args = Array.prototype.slice.call(arguments, 0);
-    if (args.length == 1) args = args[0];
-
     var path = this.broadcastPath()
     log.debug("broadcastSocket: %s %s", path, toString(args), {});
     this.socketSendArray(path, args);

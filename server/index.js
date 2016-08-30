@@ -11,7 +11,7 @@ var Server = require('./src/server');
 var Ping = require('./src/ping');
 var Manager = require('./src/manager');
 var Client = require('./src/client.js');
-var mod_ui = require('./src/ui');
+var UI = require('./src/ui');
 var Sound = require('./src/sound.js');
 
 const NODE_PORT = 3000;
@@ -52,12 +52,12 @@ try {
     APP_GLOBAL.osc.client = oscClient;
 
     var server = new Server(APP_GLOBAL);
-    // mod_ui.init(APP_GLOBAL);
     var client_manager = new Manager(APP_GLOBAL);
     var ping = new Ping(APP_GLOBAL);
     var timer = new timer.ServerTimer(APP_GLOBAL);
     var client = new Client(APP_GLOBAL);
     var sound = new Sound(APP_GLOBAL);
+    var ui = new UI(APP_GLOBAL);
 
     io.on('connection', function(socket) {
         client_manager.bindClient(socket);
@@ -65,12 +65,11 @@ try {
         ping.bindSocket(socket);
         timer.bindSocket(socket);
         sound.bindSocket(socket);
-        // mod_ui.bindSocket(APP_GLOBAL, socket);
-        // sounds.bindSocket(io, socket);
+        ui.bindSocket(socket);
     });
 
     http.listen(NODE_PORT, function() {
-        log.info('GUIDOSC server started');
+        log.info('GuidoSC server started');
         log.info('listening HTTP on *:' + NODE_PORT);
         log.info('listening OSC on *:' + OSC_IN_PORT);
         log.info('sending OSC to localhost:' + OSC_OUT_PORT);

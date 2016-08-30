@@ -12,8 +12,11 @@ var bootlint = require('gulp-bootlint');
 var htmllint = require('gulp-htmllint')
 var gutil = require('gulp-util');
 var merge = require('merge-stream');
+var tests = require('./tests.js');
 
 module.exports.add = function() {
+    tests.add();
+    
     gulp.task('jshint', function(cb) {
         pump([
             gulp.src([

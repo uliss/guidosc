@@ -234,6 +234,11 @@ Module.prototype.socketSendArray = function(path, args) {
     this.app_global.io.emit(path, args);
 };
 
+/**
+ * Sends OSC message
+ * @param path - OSC path
+ * @param args - array of arguments
+ */
 Module.prototype.oscSendArray = function(path, args) {
     if (typeof path !== 'string') {
         throw new Error("oscSendArray: path must be a string: %j", path);
@@ -251,6 +256,10 @@ function toString(array) {
     return (array.length == 1) ? array : array.join(' ');
 }
 
+/**
+ * Sends broadcast socket message to all connected clients
+ * @param - variable arguments list
+ */
 Module.prototype.broadcastSocket = function(msg) {
     var args = Array.prototype.slice.call(arguments, 0);
     var path = this.broadcastPath()
@@ -258,6 +267,10 @@ Module.prototype.broadcastSocket = function(msg) {
     this.socketSendArray(path, args);
 };
 
+/**
+ * Sends OSC message to this path: /guido/module/MODULENAME/broadcast
+ * @params - variable arguments list
+ */
 Module.prototype.broadcastOsc = function(msg) {
     var args = Array.prototype.slice.call(arguments, 0);
     var broadcast_path = this.path() + "/broadcast";

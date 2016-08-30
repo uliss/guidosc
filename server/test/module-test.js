@@ -53,6 +53,7 @@ describe('ModuleTest', function() {
         expect(m.commands).to.include.keys('help');
         expect(m.path()).to.equal('/guido/module/sample1');
         expect(m.broadcastPath()).to.equal('/guido/module/sample1/broadcast');
+        expect(m.runCommand('help')).to.deep.equal(['help']);
     });
 
     it('addCommand', function() {

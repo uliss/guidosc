@@ -16,6 +16,7 @@
     "aplayer": "^1.5.0",
     "brfs": "^1.4.3",
     "browserify": "^13.1.0",
+    "chai": "^3.5.0",
     "fittext.js": "^1.2.0",
     "gulp": "^3.9.1",
     "gulp-bootlint": "^0.8.0",
@@ -33,6 +34,7 @@
     "merge-stream": "^1.0.0",
     "pug": "^2.0.0-beta4",
     "pump": "^1.0.1",
+    "simple-mock": "^0.7.0",
     "underscore": "^1.8.3",
     "vinyl-source-stream": "^1.1.0"
   },

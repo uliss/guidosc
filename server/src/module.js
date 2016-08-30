@@ -204,10 +204,8 @@ Module.prototype.onOSC = function(path, func) {
 };
 
 Module.prototype.socketSendArray = function(path, args) {
-    if (!Array.isArray(args)) {
-        log.error("socketSendArray: arguments must be an array: %j", args);
-        return;
-    }
+    if (!Array.isArray(args))
+        throw new Error("socketSendArray: arguments must be an array");
 
     this.app_global.io.emit(path, args);
 };
@@ -218,13 +216,12 @@ Module.prototype.oscSendArray = function(path, args) {
         return;
     }
 
-    if (!Array.isArray(args)) {
-        log.error("oscSendArray: arguments must be an array: %j", args);
-        return;
-    }
+    if (!Array.isArray(args))
+        throw new Error("oscSendArray: arguments must be an array");
 
-    var arg_list = [].push(path).concat(args);
-    this.app_global.osc.client.send(path, arg_list);
+    var arg_list = [path].concat(args);
+    var obj = this.app_global.osc.client;
+    obj.send.apply(obj, arg_list);
 };
 
 function toString(array) {

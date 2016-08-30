@@ -90,6 +90,24 @@ describe('ModuleTest', function() {
         expect(fn).to.throw(Error);
     });
 
+    it('oscSendArray', function() {
+        var m = new Module(CONTEXT, 'sample1');
+        var fn = function() { m.socketSendArray('path', 123); };
+        expect(fn).to.throw(Error);
+        fn = function() { m.socketSendArray('path'); };
+        expect(fn).to.throw(Error);
+
+        m.oscSendArray("/path", [1]);
+        expect(osc_send.called).to.be.true;
+        expect(osc_send.lastCall.args).to.be.deep.equal(["/path", 1]);
+
+        m.oscSendArray("/path", []);
+        expect(osc_send.lastCall.args).to.be.deep.equal(["/path"]);
+
+        m.oscSendArray("/path", [1,2,3]);
+        expect(osc_send.lastCall.args).to.be.deep.equal(["/path",1,2,3]);
+    });
+
     it('parseOscOptions', function() {
         var p;
         expect(t.parseOscOptions()).to.be.empty;

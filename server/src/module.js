@@ -197,6 +197,13 @@ Module.prototype.runCommand = function(name, args, callback) {
         case 'osc':
             this.broadcastOsc.apply(this, bc_arg_list);
             break;
+        case 'socket':
+            this.broadcastSocket.apply(this, bc_arg_list);
+            break;
+        case 'all':
+            this.broadcastOsc.apply(this, bc_arg_list);
+            this.broadcastSocket.apply(this, bc_arg_list);
+            break;
     }
 
     return result;
@@ -277,7 +284,7 @@ Module.prototype.oscSendArray = function(path, args) {
 };
 
 function toString(array) {
-    if(!Array.isArray(array)) return array;
+    if (!Array.isArray(array)) return array;
     return (array.length == 1) ? array : array.join(' ');
 }
 

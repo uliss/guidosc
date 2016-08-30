@@ -7,7 +7,7 @@ var debug = false;
 function send_to_sc(path) {
     var args = [utils.sc_path(path)].concat(Array.prototype.slice.call(arguments, 1));
     if(debug) console.log(args);
-    socket.emit("/forward", args);
+    socket.emit("/guido/forward", args);
 }
 
 function from_sc(path, func) {

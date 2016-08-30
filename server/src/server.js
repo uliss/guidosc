@@ -46,6 +46,10 @@ function Server(app_global) {
         return VERSION;
     });
 
+    this.addCommand('quit', 'quit server', function() {
+        process.exit(0);
+    });
+
     this.registerModules();
     this.bindHttp();
     this.bindOsc();

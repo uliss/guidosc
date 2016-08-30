@@ -1,24 +1,50 @@
 var app = require('express')();
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var osc = require('node-osc');
 
 var chai = require('chai');
+var sinon = require('sinon');
 var expect = chai.expect; // we are using the "expect" style of Chai
 var Module = require('../src/module.js').Module;
 var t = require('../src/module.js')._test;
 
-var CONTEXT = {};
-CONTEXT.io = io;
-
-var oscServer = new osc.Server(5020, '0.0.0.0');
-var oscClient = new osc.Client('127.0.0.1', 5021);
-
-CONTEXT.osc = {};
-CONTEXT.osc.server = oscServer;
-CONTEXT.osc.client = oscClient;
+var CONTEXT = {
+    io: {
+        emit: function() {}
+    },
+    osc: {
+        client: {
+            send: function() {}
+        },
+        server: {
+            on: function() {}
+        }
+    }
+};
 
 describe('ModuleTest', function() {
+
+    var sandbox;
+    var io_emit;
+    var osc_send;
+    var osc_on;
+
+    beforeEach(function() {
+        // create a sandbox
+        sandbox = sinon.sandbox.create();
+        // stub some console methods
+        sandbox.stub(t.log, "log");
+        io_emit = sandbox.spy();
+        osc_send = sandbox.spy();
+        osc_on = sandbox.spy();
+        CONTEXT.io.emit = io_emit;
+        CONTEXT.osc.client.send = osc_send;
+        CONTEXT.osc.server.on = osc_on;
+    });
+
+    afterEach(function() {
+        sandbox.restore();
+    });
+
     it('new Module', function() {
         var m = new Module(CONTEXT, 'sample1');
         expect(m).to.be.an('object');
@@ -38,6 +64,30 @@ describe('ModuleTest', function() {
         expect(m.commands).to.include.keys('test');
         expect(m.commands['test']).to.be.a('function');
         expect(m.commandHelp('test')).to.be.equal('sample command');
+    });
+
+    it('checkCommand', function() {
+        var m = new Module(CONTEXT, 'sample3');
+        expect(m.checkCommand('help')).to.be.ok;
+        expect(m.checkCommand('')).to.be.false;
+        expect(m.checkCommand('not-exists')).to.be.false;
+    });
+
+    it('onOSC', function() {
+        var m = new Module(CONTEXT, 'sample1');
+        m.onOSC('path', function() {});
+        expect(osc_on.called).to.be.true;
+        expect(osc_on.lastCall.calledWith('path')).to.be.true;
+    });
+
+    it('socketSendArray', function() {
+        var m = new Module(CONTEXT, 'sample1');
+        m.socketSendArray('path', [123]);
+        expect(io_emit.called).to.be.true;
+        expect(io_emit.lastCall.calledWith('path', [123])).to.be.true;
+
+        var fn = function() { m.socketSendArray('path', 123); };
+        expect(fn).to.throw(Error);
     });
 
     it('parseOscOptions', function() {

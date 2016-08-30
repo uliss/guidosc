@@ -236,8 +236,7 @@ Module.prototype.socketSendArray = function(path, args) {
 
 Module.prototype.oscSendArray = function(path, args) {
     if (typeof path !== 'string') {
-        log.error("oscSendArray: path must be a string: %j", path);
-        return;
+        throw new Error("oscSendArray: path must be a string: %j", path);
     }
 
     if (!Array.isArray(args))
@@ -249,8 +248,6 @@ Module.prototype.oscSendArray = function(path, args) {
 };
 
 function toString(array) {
-    if (!Array.isArray(array)) return array;
-
     return (array.length == 1) ? array : array.join(' ');
 }
 

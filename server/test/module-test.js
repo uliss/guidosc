@@ -108,6 +108,9 @@ describe('ModuleTest', function() {
 
         m.oscSendArray("/path", [1,2,3]);
         expect(osc_send.lastCall.args).to.be.deep.equal(["/path",1,2,3]);
+
+        expect(function(){m.oscSendArray(123)}).to.throw(Error);
+        expect(function(){m.oscSendArray("/path", 123)}).to.throw(Error);
     });
 
     it('broadcastSocket', function() {

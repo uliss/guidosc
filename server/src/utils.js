@@ -33,6 +33,8 @@ function cli_path(path) {
 }
 
 var logger_level = (process.env.DEBUG_LEVEL === undefined) ? 'debug' : process.env.DEBUG_LEVEL;
+var logger_colorize = (process.env.NOCOLOR === undefined) ? true : false;
+var stderr_levels = (process.env.STDOUT !== undefined) ? [] : ['error', 'debug'];
 
 var logger = function(moduleName) {
     return new winston.Logger({
@@ -41,14 +43,18 @@ var logger = function(moduleName) {
                 level: logger_level,
                 handleExceptions: true,
                 json: false,
-                colorize: true,
+                colorize: logger_colorize,
                 label: moduleName,
                 prettyPrint: true,
+                depth: 2,
                 handleExceptions: true,
                 humanReadableUnhandledException: true,
                 formatter: function(options) {
                     var output = '[GuidOSC:';
-                    output += winston_config.colorize(options.level, options.level) + '] ';
+                    if (options.colorize)
+                        output += winston_config.colorize(options.level, options.level) + '] ';
+                    else
+                        output += options.level + '] ';
                     output += (options.label !== null) ? '(' + options.label + ') ' : ''
                     output += (undefined !== options.message ? options.message : '');
                     // output += (options.meta && Object.keys(options.meta).length) ? '\n';

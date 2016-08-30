@@ -42,6 +42,12 @@ Module.prototype.commandHelp = function(name) {
     return this.commands[name].help_message;
 };
 
+Module.prototype.commandBroadcastType = function(name) {
+    var cmd = this.commands[name];
+    if(!cmd) return null;
+    return cmd.call_options.broadcast ? cmd.call_options.broadcast : null;
+};
+
 function parseOscOptions(args) {
     if (!args) return {};
     if (args.length === 0) return {};

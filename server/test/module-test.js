@@ -136,6 +136,46 @@ describe('ModuleTest', function() {
         expect(osc_send.lastCall.args).to.be.deep.equal(["/guido/module/t1/broadcast", 1, 2, [3, 4]]);
     });
 
+    it('commandBroadcastType', function() {
+        var m = new Module(CONTEXT, 't1');
+        expect(m.commandBroadcastType('help')).to.be.null;
+    });
+
+    it('runCommand', function() {
+        var m = new Module(CONTEXT, 't1');
+        var cmd = sandbox.spy();
+        var cmd2 = sandbox.spy(function(msg) {return msg;});
+        // var cmd
+        var cb = sandbox.spy();
+        m.addCommand('test', '', cmd);
+        m.addCommand('test2', '', cmd2);
+
+        m.runCommand('test');
+        expect(cmd.called).to.be.true;
+        expect(cmd.lastCall.args).to.be.deep.equal([undefined]);
+        expect(cmd.lastCall.returnValue).to.be.undefined;
+
+        m.runCommand('test', 123);
+        expect(cmd.lastCall.args).to.be.deep.equal([123]);
+
+        m.runCommand('test', [123, 234]);
+        expect(cmd.lastCall.args).to.be.deep.equal([[123, 234]]);
+
+        m.runCommand('test', 1, cb);
+        expect(cmd.lastCall.args).to.be.deep.equal([1]);
+        expect(cmd.lastCall.returnValue).to.be.undefined;
+        // callback with undefined
+        expect(cb.called).to.be.true;
+        expect(cb.lastCall.args).to.be.deep.equal([undefined]);
+
+        m.runCommand('test2', 1000, cb);
+        expect(cmd2.lastCall.args).to.be.deep.equal([1000]);
+        expect(cmd2.lastCall.returnValue).to.be.equal(1000);
+        // callback with undefined
+        expect(cb.called).to.be.true;
+        expect(cb.lastCall.args).to.be.deep.equal([1000]);
+    });
+
     it('parseOscOptions', function() {
         var p;
         expect(t.parseOscOptions()).to.be.empty;

@@ -138,7 +138,16 @@ describe('ModuleTest', function() {
 
     it('commandBroadcastType', function() {
         var m = new Module(CONTEXT, 't1');
+        m.addCommand('test', '', function(){}, {broadcast: 'all'});
         expect(m.commandBroadcastType('help')).to.be.null;
+        expect(m.commandBroadcastType('not-exists')).to.be.null;
+        expect(m.commandBroadcastType('test')).to.be.equal('all');
+    });
+
+    it('commandHelp', function() {
+        var m = new Module(CONTEXT, 't1');
+        expect(m.commandHelp('help')).to.be.equal('prints this help');
+        expect(m.commandHelp('not-exists')).to.be.equal('');
     });
 
     it('runCommand', function() {

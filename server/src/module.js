@@ -39,7 +39,7 @@ Module.prototype.addCommand = function(name, help, func, opts) {
 };
 
 Module.prototype.commandHelp = function(name) {
-    return this.commands[name].help_message;
+    return this.commands[name] ? this.commands[name].help_message : '';
 };
 
 Module.prototype.commandBroadcastType = function(name) {

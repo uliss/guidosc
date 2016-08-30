@@ -75,7 +75,6 @@ function handle_alert(msg) {
 
 function page_handle() {
     server.on(PATH, function(msg) {
-        msg = JSON.parse(msg);
         var cmd = msg[0];
 
         console.log(cmd);

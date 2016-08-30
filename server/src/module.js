@@ -26,12 +26,20 @@ Module.prototype.path = function() {
     return "/guido/module/" + this.name;
 };
 
+Module.prototype.broadcastPath = function() {
+    return this.path() + "/broadcast";
+};
+
 Module.prototype.addCommand = function(name, help, func, opts) {
     if (!opts) opts = {};
     this.commands[name] = func;
     func.help_message = help;
     func.call_options = opts;
     func.command_path = this.path() + "/" + name;
+};
+
+Module.prototype.commandHelp = function(name) {
+    return this.commands[name].help_message;
 };
 
 function parseOscOptions(args) {
@@ -43,18 +51,25 @@ function parseOscOptions(args) {
     };
 
     _.chain(args).reject(function(k) {
-        return !(typeof k === 'string' || k instanceof String)
-    }).reject(function(k) {
-        return k[0] != ":"
-    }).map(function(v) {
-        return v.slice(1).split('=', 2);
-    }).each(function(opt) {
-        if (opt.length < 2) {
-            opts[opt[0]] = true;
-            return;
-        }
-        opts[opt[0]] = opt[1];
-    });
+            return !(typeof k === 'string' || k instanceof String)
+        }).reject(function(k) {
+            return k[0] != ":"
+        }).map(function(v) {
+            var pall = v.slice(1).split('=');
+            var res = [pall[0]];
+            if (pall.length > 1) res = res.concat(pall.slice(1).join('='));
+            return res;
+        })
+        .reject(function(v) {
+            return v[0] == '';
+        })
+        .each(function(opt) {
+            if (opt.length < 2) {
+                opts[opt[0]] = true;
+                return;
+            }
+            opts[opt[0]] = opt[1];
+        });
 
     return opts;
 };
@@ -188,6 +203,45 @@ Module.prototype.onOSC = function(path, func) {
     this.app_global.osc.server.on(path, func);
 };
 
+Module.prototype.socketSendArray = function(path, args) {
+    this.app_global.io.emit(path, args);
+};
+
+Module.prototype.oscSendArray = function(path, args) {
+    if (typeof path !== 'string') {
+        log.error("oscSendArray: path must be a string: %j", path);
+        return;
+    }
+
+    if (!Array.isArray(args)) {
+        log.error("oscSendArray: arguments must be an array: %j", args);
+        return;
+    }
+
+    var arg_list = [].push(path).concat(args);
+    this.app_global.osc.client.send(path, arg_list);
+};
+
+function toString(array) {
+    return (array.length == 1) ? array : array.join(' ');
+}
+
+Module.prototype.broadcastSocket = function(msg) {
+    var args = Array.prototype.slice.call(arguments, 0);
+    if (args.length == 1) args = args[0];
+
+    var path = this.broadcastPath()
+    log.debug("broadcastSocket: %s %s", path, toString(args), {});
+    this.socketSendArray(path, args);
+};
+
+Module.prototype.broadcastOsc = function(msg) {
+    var args = Array.prototype.slice.call(arguments, 0);
+    var broadcast_path = this.path() + "/broadcast";
+    // this.app_global.osc.client.send(broadcast_path, msg);
+    // log.debug("broadcastSocket:", "message: %s %s", broadcast_path, args.join(' '));
+};
+
 Module.prototype.broadcast = function(msg, type) {
     try {
         msg = JSON.stringify(msg);
@@ -217,3 +271,7 @@ Module.prototype.broadcast = function(msg, type) {
 }
 
 module.exports.Module = Module;
+// for testing
+module.exports._test = {
+    parseOscOptions: parseOscOptions
+}

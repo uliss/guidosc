@@ -204,6 +204,11 @@ Module.prototype.onOSC = function(path, func) {
 };
 
 Module.prototype.socketSendArray = function(path, args) {
+    if (!Array.isArray(args)) {
+        log.error("socketSendArray: arguments must be an array: %j", args);
+        return;
+    }
+
     this.app_global.io.emit(path, args);
 };
 
@@ -273,5 +278,6 @@ Module.prototype.broadcast = function(msg, type) {
 module.exports.Module = Module;
 // for testing
 module.exports._test = {
-    parseOscOptions: parseOscOptions
+    parseOscOptions: parseOscOptions,
+    log: log
 }

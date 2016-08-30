@@ -71,6 +71,7 @@ describe('ModuleTest', function() {
         var m = new Module(CONTEXT, 'sample3');
         expect(m.checkCommand('help')).to.be.ok;
         expect(m.checkCommand('')).to.be.false;
+        expect(m.checkCommand()).to.be.false;
         expect(m.checkCommand('not-exists')).to.be.false;
     });
 

@@ -44,7 +44,7 @@ Module.prototype.commandHelp = function(name) {
 
 Module.prototype.commandBroadcastType = function(name) {
     var cmd = this.commands[name];
-    if(!cmd) return null;
+    if (!cmd) return null;
     return cmd.call_options.broadcast ? cmd.call_options.broadcast : null;
 };
 
@@ -140,21 +140,39 @@ function parseMsg(msg) {
     };
 }
 
+function packCommandData(name, args, result) {
+    var res = [name];
+
+    if (args !== undefined) res = res.concat(args);
+
+    if (result !== undefined) {
+        if (Array.isArray(result)) {
+            res.push(result);
+        } else if (typeof result === 'object') {
+            res.push([JSON.stringify(result)]);
+        } else
+            res.push([result]);
+    } else {
+        res.push([]);
+    }
+
+    return res;
+}
+
 Module.prototype.runCommand = function(name, args, callback) {
     var result = this.commands[name].call(this, args);
     // run socket callback
     if (callback) callback(result);
 
-    var response = {
-        cmd: name
-    };
+    var bc_type = this.commandBroadcastType(name);
+    if (!bc_type)
+        return result;
 
-    if (args) response.args = args;
-    if (result) response.value = result;
-
-    var broadcast_type = this.commands[name].call_options.broadcast;
-    if (broadcast_type) {
-        this.broadcast(response, broadcast_type);
+    var bc_arg_list = packCommandData(name, args, result);
+    switch (this.commandBroadcastType(name)) {
+        case 'osc':
+            this.broadcastOsc.apply(this, bc_arg_list);
+            break;
     }
 
     return result;
@@ -282,5 +300,6 @@ module.exports.Module = Module;
 // for testing
 module.exports._test = {
     parseOscOptions: parseOscOptions,
-    log: log
+    log: log,
+    packCommandData: packCommandData
 }

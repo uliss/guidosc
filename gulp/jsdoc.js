@@ -3,7 +3,7 @@ var jsdoc = require('gulp-jsdoc3');
 
 module.exports.add = function() {
     gulp.task('doc', function(cb) {
-        gulp.src(['./server/src/*.js'], {
+        gulp.src(['server/src/*.js'], {
                 read: false
             })
             .pipe(jsdoc(cb));

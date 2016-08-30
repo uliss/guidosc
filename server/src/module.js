@@ -4,6 +4,11 @@ var _ = require('underscore');
 var utils = require('./utils.js');
 var log = utils.log();
 
+/**
+ * @constructor
+ * @param app_global
+ * @param {string} name - module name
+ */
 function Module(app_global, name) {
     this.app_global = app_global;
     this.name = name;
@@ -22,14 +27,28 @@ function Module(app_global, name) {
     });
 }
 
+/**
+ * @return module communication path
+ * @see broadcastPath()
+ */
 Module.prototype.path = function() {
     return "/guido/module/" + this.name;
 };
 
+/**
+ * @return module broadcast path
+ */
 Module.prototype.broadcastPath = function() {
     return this.path() + "/broadcast";
 };
 
+/**
+ * add command to module
+ * @param {string} name - command name
+ * @param {string} help - command description
+ * @param {function} func - function callback
+ * @param {Object} opts - call options
+ */
 Module.prototype.addCommand = function(name, help, func, opts) {
     if (!opts) opts = {};
     this.commands[name] = func;
@@ -159,6 +178,11 @@ function packCommandData(name, args, result) {
     return res;
 }
 
+/**
+ * @param {string} name - command name
+ * @param {Array} args - command arguments
+ * @param {function} callback - callback
+ */
 Module.prototype.runCommand = function(name, args, callback) {
     var result = this.commands[name].call(this, args);
     // run socket callback
@@ -236,8 +260,8 @@ Module.prototype.socketSendArray = function(path, args) {
 
 /**
  * Sends OSC message
- * @param path - OSC path
- * @param args - array of arguments
+ * @param {string} path - OSC path
+ * @param {Array} args - array of arguments
  */
 Module.prototype.oscSendArray = function(path, args) {
     if (typeof path !== 'string') {
@@ -258,9 +282,9 @@ function toString(array) {
 
 /**
  * Sends broadcast socket message to all connected clients
- * @param - variable arguments list
+ * @param {...Mixed} var_args - variable arguments
  */
-Module.prototype.broadcastSocket = function(msg) {
+Module.prototype.broadcastSocket = function(var_args) {
     var args = Array.prototype.slice.call(arguments, 0);
     var path = this.broadcastPath()
     log.debug("broadcastSocket: %s %s", path, toString(args), {});
@@ -269,9 +293,9 @@ Module.prototype.broadcastSocket = function(msg) {
 
 /**
  * Sends OSC message to this path: /guido/module/MODULENAME/broadcast
- * @params - variable arguments list
+ * @param {...Mixed} var_args - variable arguments
  */
-Module.prototype.broadcastOsc = function(msg) {
+Module.prototype.broadcastOsc = function(var_args) {
     var args = Array.prototype.slice.call(arguments, 0);
     var broadcast_path = this.path() + "/broadcast";
     log.debug("broadcastSocket:", "message: %s %s", broadcast_path, toString(args));

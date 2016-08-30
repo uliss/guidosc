@@ -18,7 +18,7 @@ function Client(app_global) {
             var val = msg[2];
 
             log.verbose('set css: %s { %s: %s }', sel, key, val);
-            this.broadcast(['css', sel, key, val], 'socket');
+            this.broadcastSocket('css', sel, key, val);
         }
 
         if (msg.length == 2) {
@@ -26,13 +26,13 @@ function Client(app_global) {
             var css = msg[1];
 
             log.verbose('set css: %s %s', sel, css);
-            this.broadcast(['css', sel, css], 'socket');
+            this.broadcastSocket('css', sel, css);
         }
     });
 
     this.addCommand('reload', 'reload page on all connected clients', function() {
         log.verbose('reloading page...');
-        this.broadcast(['reload'], 'socket');
+        this.broadcastSocket('reload');
     });
 
     this.addCommand('redirect', 'redirects all connected clients to other URL', function(args) {
@@ -42,7 +42,7 @@ function Client(app_global) {
         }
 
         log.verbose('redirect to:', args[0]);
-        this.broadcast(['redirect', args[0]]);
+        this.broadcastSocket('redirect', args[0]);
     });
 
     this.addCommand('title', 'set page and window title on connected clients', function(args) {
@@ -52,10 +52,8 @@ function Client(app_global) {
         }
 
         log.verbose('title:', args);
-        if (args.length == 1)
-            this.broadcast(['title', args[0]]);
-        if (args.length == 2)
-            this.broadcast(['title', args[0], args[1]]);
+        args.unshift('title');
+        this.broadcastSocket.apply(this, args);
     });
 
     this.addCommand('alert', 'shows alert modal window on all connected clients', function(args) {
@@ -69,7 +67,7 @@ function Client(app_global) {
         var subject = args[2];
 
         log.verbose('%s message: [%s] - %s', type, title, subject);
-        this.broadcast(['alert', type, title, subject]);
+        this.broadcastSocket('alert', type, title, subject);
     });
 }
 

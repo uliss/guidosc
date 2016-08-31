@@ -2,89 +2,22 @@ var chai = require('chai');
 var sinon = require('sinon');
 var expect = chai.expect; // we are using the "expect" style of Chai
 var Ping = require('../src/ping.js');
-var t = require('../src/module.js')._test;
-
-var CONTEXT = {
-    io: {
-        emit: function() {}
-    },
-    socket: {
-        fn: null,
-        on: function(path, fn) {
-            this.fn = sinon.spy(fn);
-        },
-        emit: function(path, args, cb) {
-            if (this.fn)
-                this.fn.call(null, args, cb);
-        }
-    },
-    osc: {
-        client: {
-            send: function() {}
-        },
-        server: {
-            fn_dict: {},
-            testMsg: function(args) {
-                var args = Array.prototype.slice.call(arguments, 0);
-                var func = this.fn_dict[args[0]];
-                if (func) {
-                    // console.log(args);
-                    func.call(null, args);
-                }
-            },
-            on: function(path, func) {
-                this.fn_dict[path] = func;
-            },
-            handler: function(name) {
-                return this.fn_dict[name];
-            }
-        }
-    },
-    expect: {
-        osc: {
-            client: {
-                send: {
-                    args: function() {
-                        var args = Array.prototype.slice.call(arguments, 0);
-                        return expect(CONTEXT.osc.client.send.lastCall.args).to.be.deep.equal(args);
-                    },
-                    called: function() {
-                        return expect(CONTEXT.osc.client.send.called);
-                    },
-                    reset: function() {
-                        CONTEXT.osc.client.send.reset();
-                    }
-                },
-            }
-        }
-    }
-};
+var CONTEXT = require('./context.js');
 
 describe('PingTest', function() {
     var sandbox;
-    var io_emit;
     var osc_send;
-    var osc_on;
 
     beforeEach(function() {
         // create a sandbox
         sandbox = sinon.sandbox.create();
-        sandbox.stub(t.log, "log");
-        // stub some console methods
-        io_emit = sandbox.spy(CONTEXT.io.emit);
-        osc_send = sandbox.spy(CONTEXT.osc.server.send);
-        osc_on = sandbox.spy(CONTEXT.osc.server.on);
-        CONTEXT.io.emit = io_emit;
-        CONTEXT.osc.client.send = osc_send;
-        CONTEXT.osc.server.on = osc_on;
+        CONTEXT.reset();
+        CONTEXT.init(sandbox);
+        osc_send = CONTEXT.osc.client.send;
     });
 
     afterEach(function() {
         sandbox.restore();
-        CONTEXT.osc.server.fn_dict = {};
-        CONTEXT.socket.fn_dict = null;
-        if (CONTEXT.socket.fn)
-            CONTEXT.socket.fn.reset();
     });
 
     it('new Ping', function() {
@@ -96,46 +29,33 @@ describe('PingTest', function() {
 
     it('osc_command', function() {
         var m = new Ping(CONTEXT);
-        // valid path, no command
-        CONTEXT.osc.server.testMsg(m.path());
-        CONTEXT.expect.osc.client.send.called().to.be.false;
-
-        // valid path, invalid command
-        CONTEXT.osc.server.testMsg(m.path(), 'hi!');
-        CONTEXT.expect.osc.client.send.called().to.be.false;
-
         // valid path, valid command, no back
-        CONTEXT.osc.server.testMsg('/guido/module/ping', 'help');
-        CONTEXT.expect.osc.client.send.called().to.be.false;
+        CONTEXT.testOSC('/guido/module/ping', 'ping', 1);
+        expect(osc_send.called).to.be.false;
 
-        // valid path, valid command, no back
-        CONTEXT.osc.server.testMsg('/guido/module/ping', 'help', ':back');
-        CONTEXT.expect.osc.client.send.called().to.be.true;
-        CONTEXT.expect.osc.client.send.args(m.path(), 'help', ['help', 'ping']);
-        CONTEXT.expect.osc.client.send.reset();
+        // valid path, valid command, :back option
+        CONTEXT.testOSC(m.path(), 'ping', 1, ':back');
+        expect(osc_send.called).to.be.true;
+        expect(osc_send.lastCall.args).to.be.deep.equal([m.path(), 'ping', 1]);
 
-        // valid path, valid command
-        CONTEXT.osc.server.testMsg('/guido/module/ping', 'ping', 1, ':back');
-        CONTEXT.expect.osc.client.send.called().to.be.true;
-        CONTEXT.expect.osc.client.send.args(m.path(), 'ping', 1);
+        // valid path, valid command, :back option (only first argument)
+        CONTEXT.testOSC(m.path(), 'ping', 20, 21, ':back');
+        expect(osc_send.called).to.be.true;
+        expect(osc_send.lastCall.args).to.be.deep.equal([m.path(), 'ping', 20]);
     });
 
     it('socket_command', function() {
         var m = new Ping(CONTEXT);
-        var data;
+        var result;
         var fn = sandbox.spy(function(v) {
-            data = v;
+            result = v;
         });
 
         m.bindSocket(CONTEXT.socket);
         CONTEXT.socket.emit(m.path(), ['ping', 11], fn);
+        expect(result).to.be.equal(11);
 
-        expect(CONTEXT.socket.fn.called).to.be.true;
-        expect(CONTEXT.socket.fn.lastCall.args).to.be.deep.equal([
-            ['ping', 11], fn
-        ]);
-
-        expect(fn.called).to.be.true;
-        expect(fn.lastCall.args).to.be.deep.equal([11]);
+        CONTEXT.socket.emit(m.path(), ['ping', 120], fn);
+        expect(result).to.be.equal(120);
     });
 });

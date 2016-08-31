@@ -230,27 +230,11 @@ Module.prototype.bindSocket = function(socket) {
         try {
             var cmd = parseMsg(msg);
             if (!self.checkCommand(cmd.name)) return;
-            self.runCommand(cmd.name, cmd.args, callback);
+            return self.runCommand(cmd.name, cmd.args, callback);
         } catch (e) {
             log.error("bindSocket exception:", e.message);
         }
     });
-};
-
-Module.prototype.io = function() {
-    return this.app_global.io;
-};
-
-Module.prototype.app = function() {
-    return this.app_global.app;
-};
-
-Module.prototype.oscClient = function() {
-    return this.app_global.osc.client;
-};
-
-Module.prototype.oscServer = function() {
-    return this.app_global.osc.server;
 };
 
 Module.prototype.onOSC = function(path, func) {

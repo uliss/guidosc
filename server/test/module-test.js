@@ -329,4 +329,19 @@ describe('ModuleTest', function() {
         expect(osc_send.called).to.be.true;
         expect(osc_send.lastCall.args).to.be.deep.equal([m.path(), 'help', ['help']]);
     });
+
+    it('bindSocket', function() {
+        var m = new Module(CONTEXT, 't1');
+        var fn;
+        var socket = {};
+        socket.on = sandbox.spy(function(path, func) {
+            fn = func;
+        });
+        m.bindSocket(socket);
+        expect(fn("not-exists")).to.be.undefined;
+        expect(fn()).to.be.undefined;
+        expect(fn([])).to.be.undefined;
+        expect(fn(['help'])).to.be.deep.equal(['help']);
+        expect(fn("help")).to.be.deep.equal(['help']);
+    });
 });

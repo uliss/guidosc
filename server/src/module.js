@@ -201,8 +201,7 @@ Module.prototype.runCommand = function(name, args, callback) {
             this.broadcastSocket.apply(this, bc_arg_list);
             break;
         case 'all':
-            this.broadcastOsc.apply(this, bc_arg_list);
-            this.broadcastSocket.apply(this, bc_arg_list);
+            this.broadcastAll.apply(this, bc_arg_list);
             break;
     }
 
@@ -306,8 +305,13 @@ Module.prototype.broadcastSocket = function(var_args) {
 Module.prototype.broadcastOsc = function(var_args) {
     var args = Array.prototype.slice.call(arguments, 0);
     var broadcast_path = this.path() + "/broadcast";
-    log.debug("broadcastSocket:", "message: %s %s", broadcast_path, toString(args));
+    log.debug("broadcastOsc: message: %s %s", broadcast_path, toString(args));
     this.oscSendArray(broadcast_path, args);
+};
+
+Module.prototype.broadcastAll = function(var_args) {
+    this.broadcastSocket.apply(this, arguments);
+    this.broadcastOsc.apply(this, arguments);
 };
 
 Module.prototype.broadcast = function(msg, type) {

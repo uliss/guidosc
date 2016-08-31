@@ -1,6 +1,7 @@
 var sinon = require('sinon');
 var chai = require('chai');
 var expect = chai.expect;
+// var utils = require('./utils.js');
 var t = require('../src/module.js')._test;
 
 var CONTEXT = {

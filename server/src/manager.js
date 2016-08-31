@@ -24,17 +24,20 @@ Manager.prototype.bindClient = function(socket) {
     this.clients[addr] = {
         sock: socket
     };
-    this.oscClient().send(this.path(), "connected", addr);
+    this.oscSendArray(this.path(), ["connected", addr]);
 
     this.bindSocket(socket);
 
     var self = this;
     socket.on('disconnect', function() {
         log.verbose('client %s disconnected', addr);
-        self.oscClient().send(self.path(), "disconnected", addr);
+        self.oscSendArray(self.path(), ["disconnected", addr]);
         delete self.clients[addr];
     });
 };
 
 
 module.exports = Manager;
+module.exports._test = {
+    log: log
+};

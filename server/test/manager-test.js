@@ -4,6 +4,9 @@ var expect = chai.expect; // we are using the "expect" style of Chai
 var Manager = require('../src/manager.js');
 var CONTEXT = require('./context.js');
 
+// disable logging
+sinon.stub(Manager._test.log, "log");
+
 describe('ManagerTest', function() {
     var sandbox;
     var osc_send;
@@ -44,5 +47,55 @@ describe('ManagerTest', function() {
         CONTEXT.testOSC(m.path(), 'list', ':back');
         expect(osc_send.called).to.be.true;
         expect(osc_send.lastCall.args).to.be.deep.equal([m.path(), 'list', ['127.0.0.1']]);
+    });
+
+    it('bindClient', function() {
+        var socket = {
+            fn: {},
+            disconnect: function() {
+                this.fn['disconnect']();
+            },
+            on: function(name, cb) {
+                // console.log(ip);
+                this.fn[name] = cb;
+            },
+            request: {
+                connection: {
+                    remoteAddress: ""
+                }
+            }
+        };
+
+        var m = new Manager(CONTEXT);
+        m.bindClient(socket);
+        expect(osc_send.called).to.be.true;
+        expect(osc_send.lastCall.args).to.be.deep.equal([m.path(), 'connected', '127.0.0.1']);
+        osc_send.reset;
+
+        CONTEXT.testOSC(m.path(), 'list', ':back');
+        expect(osc_send.called).to.be.true;
+        expect(osc_send.lastCall.args).to.be.deep.equal([m.path(), 'list', ['127.0.0.1']]);
+        osc_send.reset;
+
+        socket.request.connection.remoteAddress = "xxxxxxx10.0.0.1";
+        m.bindClient(socket);
+        expect(osc_send.called).to.be.true;
+        expect(osc_send.lastCall.args).to.be.deep.equal([m.path(), 'connected', '10.0.0.1']);
+        osc_send.reset;
+
+        CONTEXT.testOSC(m.path(), 'list', ':back');
+        expect(osc_send.called).to.be.true;
+        expect(osc_send.lastCall.args).to.be.deep.equal([m.path(), 'list', ['127.0.0.1', '10.0.0.1']]);
+        osc_send.reset;
+
+        socket.disconnect('10.0.0.1');
+        expect(osc_send.called).to.be.true;
+        expect(osc_send.lastCall.args).to.be.deep.equal([m.path(), 'disconnected', '10.0.0.1']);
+        osc_send.reset;
+
+        CONTEXT.testOSC(m.path(), 'list', ':back');
+        expect(osc_send.called).to.be.true;
+        expect(osc_send.lastCall.args).to.be.deep.equal([m.path(), 'list', ['127.0.0.1']]);
+        osc_send.reset;
     });
 });

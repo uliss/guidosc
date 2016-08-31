@@ -20,18 +20,6 @@ Number.prototype.toHHMMSS = function() {
     return hours + ':' + minutes + ':' + seconds;
 };
 
-function sc_path(path) {
-    return "/sc" + path;
-}
-
-function node_path(path) {
-    return "/node" + path;
-}
-
-function cli_path(path) {
-    return "/cli" + path;
-}
-
 var logger_level = (process.env.DEBUG_LEVEL === undefined) ? 'debug' : process.env.DEBUG_LEVEL;
 var logger_colorize = (process.env.NOCOLOR === undefined) ? true : false;
 var stderr_levels = (process.env.STDOUT !== undefined) ? [] : ['error', 'debug'];
@@ -68,7 +56,4 @@ var logger = function(moduleName) {
 
 logger.exitOnError = false;
 
-module.exports.sc_path = sc_path;
-module.exports.node_path = node_path;
-module.exports.cli_path = cli_path;
 module.exports.log = logger;

@@ -107,4 +107,26 @@ describe('ClientTest', function() {
         m.runCommand('alert', ['info', 'title', 'msg']);
         expect(io_emit.lastCall.args).to.be.deep.equal([m.broadcastPath(), ['alert', 'info', 'title', 'msg']]);
     });
+
+    it('css', function() {
+        var m = new Client(CONTEXT);
+        // no argument
+        m.runCommand('css');
+        expect(io_emit.called).to.be.false;
+
+        // empty argument
+        m.runCommand('css', []);
+        expect(io_emit.called).to.be.false;
+        m.runCommand('css', [1]);
+        expect(io_emit.called).to.be.false;
+
+        // css: selector key value
+        m.runCommand('css', ['html', 'color', 'red']);
+        expect(io_emit.called).to.be.true;
+        expect(io_emit.lastCall.args).to.be.deep.equal([m.broadcastPath(), ['css', 'html', 'color', 'red']]);
+
+        m.runCommand('css', ['html', '{"color": "red"}']);
+        expect(io_emit.called).to.be.true;
+        expect(io_emit.lastCall.args).to.be.deep.equal([m.broadcastPath(), ['css', 'html', '{"color": "red"}']]);
+    });
 });

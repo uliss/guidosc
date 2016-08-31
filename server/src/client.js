@@ -7,7 +7,7 @@ function Client(app_global) {
     mod.Module.call(this, app_global, 'client');
 
     this.addCommand('css', 'set CSS style on all clients', function(msg) {
-        if (msg.length < 2) {
+        if (!msg || msg.length < 2) {
             log.error("css: invalid argument count");
             return;
         }

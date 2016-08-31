@@ -24,12 +24,12 @@ function handle_redirect(msg) {
 
 function handle_title(msg) {
     if (msg.length == 2) {
-        $("#title").text(msg[1]);
+        $("#title").text(decodeURIComponent(msg[1]));
     }
 
     if (msg.length == 3) {
-        $("#title").text(msg[1]);
-        document.title = msg[2];
+        $("#title").text(decodeURIComponent(msg[1]));
+        document.title = decodeURIComponent(msg[2]);
     }
 }
 

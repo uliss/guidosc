@@ -5,6 +5,16 @@ var utils = require('./utils.js');
 var log = utils.log();
 
 /**
+ * Return values:
+ *
+ * 1. OSC: /path cmd args => none
+ * 2. OSC: /path cmd args :back => /path cmd result
+ * 3. SOCKET: /path [cmd, args] callback => callback(result)
+ * 4. broadcast:
+ *    => /path/broadcast cmd args result
+ */
+
+/**
  * @constructor
  * @param app_global
  * @param {string} name - module name

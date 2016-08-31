@@ -14,10 +14,13 @@ var gutil = require('gulp-util');
 var merge = require('merge-stream');
 var tests = require('./tests.js');
 var jsdoc = require('./jsdoc.js');
+var lint = require('./lint.js');
 
 module.exports.add = function() {
     tests.add();
     jsdoc.add();
+    lint.add();
+
 
     gulp.task('jshint', function(cb) {
         pump([

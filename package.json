@@ -20,6 +20,7 @@
     "fittext.js": "^1.2.0",
     "gulp": "^3.9.1",
     "gulp-bootlint": "^0.8.0",
+    "gulp-eslint": "^3.0.1",
     "gulp-htmllint": "0.0.9",
     "gulp-istanbul": "^1.1.1",
     "gulp-jsdoc3": "^0.3.0",

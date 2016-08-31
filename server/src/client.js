@@ -36,7 +36,7 @@ function Client(app_global) {
     });
 
     this.addCommand('redirect', 'redirects all connected clients to other URL', function(args) {
-        if (args.length < 1) {
+        if (!args || args.length < 1) {
             log.error('redirect:', 'no URL given');
             return;
         }
@@ -74,3 +74,6 @@ function Client(app_global) {
 inherits(Client, mod.Module);
 
 module.exports = Client;
+module.exports._test = {
+    log: log
+};

@@ -309,38 +309,14 @@ Module.prototype.broadcastOsc = function(var_args) {
     this.oscSendArray(broadcast_path, args);
 };
 
+/**
+ * Sends OSC and socket message to this path: /guido/module/MODULENAME/broadcast
+ * @param {...Mixed} var_args - variable arguments
+ */
 Module.prototype.broadcastAll = function(var_args) {
     this.broadcastSocket.apply(this, arguments);
     this.broadcastOsc.apply(this, arguments);
 };
-
-Module.prototype.broadcast = function(msg, type) {
-    try {
-        msg = JSON.stringify(msg);
-        var broadcast_path = this.path() + "/broadcast";
-        if (!type) type = 'all';
-        switch (type) {
-            case 'all':
-                {
-                    this.app_global.io.emit(broadcast_path, msg);
-                    this.app_global.osc.client.send(broadcast_path, msg);
-                    log.debug("broadcast message: %s %s", broadcast_path, msg);
-                }
-                break;
-            case 'socket':
-                {
-                    this.app_global.io.emit(broadcast_path, msg);
-                    log.debug("broadcast message: %s %s", broadcast_path, msg);
-                }
-                break;
-            default:
-                log.error("unknown broadcast type:", type);
-                break;
-        }
-    } catch (e) {
-        log.error("broadcast exception:", e.what);
-    }
-}
 
 module.exports.Module = Module;
 // for testing

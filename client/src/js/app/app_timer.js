@@ -72,20 +72,16 @@ function ServerTimer(element) {
     });
 
     server.on(this.socketPath + "/broadcast", function(msg) {
-        msg = JSON.parse(msg);
-        if (msg.time !== undefined) {
-            element.text(msg.time.toHHMMSS());
-        }
-
-        if (msg.cmd !== undefined) {
-            switch (msg.cmd) {
-                case 'start':
-                    timerControlSetStarted();
-                    break;
-                case 'stop':
-                    timerControlSetStopped();
-                    break;
-            }
+        switch (msg[0]) {
+            case "time":
+                element.text(msg[1].toHHMMSS());
+                break;
+            case "start":
+                timerControlSetStarted();
+                break;
+            case "stop":
+                timerControlSetStopped();
+                break;
         }
     });
 

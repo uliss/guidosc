@@ -45,9 +45,7 @@ ServerTimer.prototype.isRunning = function() {
 
 ServerTimer.prototype.update = function() {
     log.debug('ServerTimer:', this.currentTime.toHHMMSS());
-    this.broadcast({
-        time: this.currentTime
-    });
+    this.broadcastAll('time', this.currentTime);
 }
 
 ServerTimer.prototype.reset = function() {

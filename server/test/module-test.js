@@ -312,4 +312,21 @@ describe('ModuleTest', function() {
         expect(p).to.be.not.empty;
         expect(p._raw_args[0]).to.be.equal(':=');
     });
+
+    it('registerOSCHandler', function() {
+        var fn;
+        CONTEXT.osc.server.on = sandbox.spy(function(msg, func) {
+            fn = func;
+        });
+        var m = new Module(CONTEXT, 't1');
+        expect(fn([])).to.be.undefined;
+        expect(fn([''])).to.be.undefined;
+        expect(fn(['/path', 'help'])).to.deep.equal(['help']);
+        expect(fn(['/path', 'not-exists'])).to.be.undefined;
+
+        expect(osc_send.called).to.be.false;
+        expect(fn(['/path', 'help', ':back'])).to.deep.equal(['help']);
+        expect(osc_send.called).to.be.true;
+        expect(osc_send.lastCall.args).to.be.deep.equal([m.path(), 'help', ['help']]);
+    });
 });

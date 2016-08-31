@@ -120,7 +120,7 @@ Module.prototype.registerOSCHandler = function() {
                 return;
             }
 
-            self.runCommand(cmd, args, function(data) {
+            return self.runCommand(cmd, args, function(data) {
                 // removed undefined
                 var arg_list = [path, cmd, data].filter(function(n) {
                     return n != undefined;

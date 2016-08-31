@@ -88,15 +88,21 @@ describe('ModuleTest', function() {
         expect(io_emit.called).to.be.true;
         expect(io_emit.lastCall.calledWith('path', [123])).to.be.true;
 
-        var fn = function() { m.socketSendArray('path', 123); };
+        var fn = function() {
+            m.socketSendArray('path', 123);
+        };
         expect(fn).to.throw(Error);
     });
 
     it('oscSendArray', function() {
         var m = new Module(CONTEXT, 'sample1');
-        var fn = function() { m.socketSendArray('path', 123); };
+        var fn = function() {
+            m.socketSendArray('path', 123);
+        };
         expect(fn).to.throw(Error);
-        fn = function() { m.socketSendArray('path'); };
+        fn = function() {
+            m.socketSendArray('path');
+        };
         expect(fn).to.throw(Error);
 
         m.oscSendArray("/path", [1]);
@@ -106,11 +112,15 @@ describe('ModuleTest', function() {
         m.oscSendArray("/path", []);
         expect(osc_send.lastCall.args).to.be.deep.equal(["/path"]);
 
-        m.oscSendArray("/path", [1,2,3]);
-        expect(osc_send.lastCall.args).to.be.deep.equal(["/path",1,2,3]);
+        m.oscSendArray("/path", [1, 2, 3]);
+        expect(osc_send.lastCall.args).to.be.deep.equal(["/path", 1, 2, 3]);
 
-        expect(function(){m.oscSendArray(123)}).to.throw(Error);
-        expect(function(){m.oscSendArray("/path", 123)}).to.throw(Error);
+        expect(function() {
+            m.oscSendArray(123)
+        }).to.throw(Error);
+        expect(function() {
+            m.oscSendArray("/path", 123)
+        }).to.throw(Error);
     });
 
     it('broadcastSocket', function() {
@@ -143,7 +153,9 @@ describe('ModuleTest', function() {
 
     it('commandBroadcastType', function() {
         var m = new Module(CONTEXT, 't1');
-        m.addCommand('test', '', function(){}, {broadcast: 'all'});
+        m.addCommand('test', '', function() {}, {
+            broadcast: 'all'
+        });
         expect(m.commandBroadcastType('help')).to.be.null;
         expect(m.commandBroadcastType('not-exists')).to.be.null;
         expect(m.commandBroadcastType('test')).to.be.equal('all');
@@ -158,7 +170,9 @@ describe('ModuleTest', function() {
     it('runCommand', function() {
         var m = new Module(CONTEXT, 't1');
         var cmd = sandbox.spy();
-        var cmd2 = sandbox.spy(function(msg) {return msg;});
+        var cmd2 = sandbox.spy(function(msg) {
+            return msg;
+        });
         // var cmd
         var cb = sandbox.spy();
         m.addCommand('test', '', cmd);
@@ -173,7 +187,9 @@ describe('ModuleTest', function() {
         expect(cmd.lastCall.args).to.be.deep.equal([123]);
 
         m.runCommand('test', [123, 234]);
-        expect(cmd.lastCall.args).to.be.deep.equal([[123, 234]]);
+        expect(cmd.lastCall.args).to.be.deep.equal([
+            [123, 234]
+        ]);
 
         m.runCommand('test', 1, cb);
         expect(cmd.lastCall.args).to.be.deep.equal([1]);
@@ -194,31 +210,67 @@ describe('ModuleTest', function() {
         expect(t.packCommandData("test")).to.be.deep.equal(['test', []]);
         expect(t.packCommandData("test", 1)).to.be.deep.equal(['test', 1, []]);
         expect(t.packCommandData("test", [1])).to.be.deep.equal(['test', 1, []]);
-        expect(t.packCommandData("test", [1,2])).to.be.deep.equal(['test', 1, 2, []]);
-        expect(t.packCommandData("test", [1,2,3])).to.be.deep.equal(['test', 1, 2, 3, []]);
+        expect(t.packCommandData("test", [1, 2])).to.be.deep.equal(['test', 1, 2, []]);
+        expect(t.packCommandData("test", [1, 2, 3])).to.be.deep.equal(['test', 1, 2, 3, []]);
         expect(t.packCommandData("test", undefined, 1)).to.be.deep.equal(['test', [1]]);
         expect(t.packCommandData("test", undefined, 'a')).to.be.deep.equal(['test', ['a']]);
         expect(t.packCommandData("test", undefined, ['a', 'b'])).to.be.deep.equal(['test', ['a', 'b']]);
-        expect(t.packCommandData("test", undefined, {k: 1})).to.be.deep.equal(['test', [JSON.stringify({k:1})]]);
+        expect(t.packCommandData("test", undefined, {
+            k: 1
+        })).to.be.deep.equal(['test', [JSON.stringify({
+            k: 1
+        })]]);
         expect(t.packCommandData("test", 1, ['a', 'b'])).to.be.deep.equal(['test', 1, ['a', 'b']]);
         expect(t.packCommandData("test", [1, 2], ['a', 'b'])).to.be.deep.equal(['test', 1, 2, ['a', 'b']]);
-        expect(t.packCommandData("test", 1, {k: 1})).to.be.deep.equal(['test', 1, [JSON.stringify({k:1})]]);
+        expect(t.packCommandData("test", 1, {
+            k: 1
+        })).to.be.deep.equal(['test', 1, [JSON.stringify({
+            k: 1
+        })]]);
     });
 
     it('runCommand:broadcast', function() {
         var m = new Module(CONTEXT, 't1');
-        var cmd = sandbox.spy(function(msg) {return msg;});
+        var cmd = sandbox.spy(function(msg) {
+            return msg;
+        });
 
-        m.addCommand('test', '', cmd, { broadcast: 'osc' });
+        m.addCommand('test', '', cmd, {
+            broadcast: 'all'
+        });
 
         expect(m.runCommand('test')).to.be.undefined;
         expect(osc_send.called).to.be.true;
         expect(osc_send.lastCall.args).to.be.deep.equal([m.broadcastPath(), 'test', []]);
+        expect(io_emit.called).to.be.true;
+        expect(io_emit.lastCall.args).to.be.deep.equal([m.broadcastPath(), ['test', []]]);
 
         expect(m.runCommand('test', 1)).to.be.equal(1);
         expect(osc_send.lastCall.args).to.be.deep.equal([m.broadcastPath(), 'test', 1, [1]]);
-        expect(m.runCommand('test', [1, 2])).to.be.deep.equal([1,2]);
+        expect(m.runCommand('test', [1, 2])).to.be.deep.equal([1, 2]);
         expect(osc_send.lastCall.args).to.be.deep.equal([m.broadcastPath(), 'test', 1, 2, [1, 2]]);
+
+        io_emit.reset();
+        osc_send.reset();
+
+        m.addCommand('test_osc', '', cmd, {
+            broadcast: 'osc'
+        });
+        expect(m.runCommand('test_osc', 2)).to.be.equal(2);
+        expect(osc_send.called).to.be.true;
+        expect(osc_send.lastCall.args).to.be.deep.equal([m.broadcastPath(), 'test_osc', 2, [2]]);
+        expect(io_emit.called).to.be.false;
+
+        io_emit.reset();
+        osc_send.reset();
+
+        m.addCommand('test_socket', '', cmd, {
+            broadcast: 'socket'
+        });
+        expect(m.runCommand('test_socket', 3)).to.be.equal(3);
+        expect(osc_send.called).to.be.false;
+        expect(io_emit.called).to.be.true;
+        expect(io_emit.lastCall.args).to.be.deep.equal([m.broadcastPath(), ['test_socket', 3, [3]]]);
     });
 
     it('parseOscOptions', function() {

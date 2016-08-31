@@ -1,6 +1,3 @@
-var app = require('express')();
-var http = require('http').Server(app);
-
 var chai = require('chai');
 var sinon = require('sinon');
 var expect = chai.expect; // we are using the "expect" style of Chai

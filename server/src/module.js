@@ -76,7 +76,7 @@ function parseOscOptions(args) {
     };
 
     _.chain(args).reject(function(k) {
-            return !(typeof k === 'string' || k instanceof String)
+            return !(typeof k === 'string' || k instanceof String);
         }).reject(function(k) {
             return k[0] != ":"
         }).map(function(v) {

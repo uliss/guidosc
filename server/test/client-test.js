@@ -70,4 +70,21 @@ describe('ClientTest', function() {
         m.runCommand('redirect', ['http://ya.ru']);
         expect(io_emit.lastCall.args).to.be.deep.equal([m.broadcastPath(), ['redirect', 'http://ya.ru']]);
     });
+
+    it('redirect', function() {
+        var m = new Client(CONTEXT);
+        // no argument
+        m.runCommand('title');
+        expect(io_emit.called).to.be.false;
+
+        // empty argument
+        m.runCommand('title', []);
+        expect(io_emit.called).to.be.false;
+
+        m.runCommand('title', ['TITLE']);
+        expect(io_emit.lastCall.args).to.be.deep.equal([m.broadcastPath(), ['title', 'TITLE']]);
+
+        m.runCommand('title', ['TITLE1', 'TITLE2']);
+        expect(io_emit.lastCall.args).to.be.deep.equal([m.broadcastPath(), ['title', 'TITLE1', 'TITLE2']]);
+    });
 });

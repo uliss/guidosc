@@ -46,7 +46,7 @@ function Client(app_global) {
     });
 
     this.addCommand('title', 'set page and window title on connected clients', function(args) {
-        if (args.length == 0) {
+        if (!args || args.length == 0) {
             log.error("none title given");
             return;
         }

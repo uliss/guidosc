@@ -71,7 +71,7 @@ describe('ClientTest', function() {
         expect(io_emit.lastCall.args).to.be.deep.equal([m.broadcastPath(), ['redirect', 'http://ya.ru']]);
     });
 
-    it('redirect', function() {
+    it('title', function() {
         var m = new Client(CONTEXT);
         // no argument
         m.runCommand('title');
@@ -86,5 +86,25 @@ describe('ClientTest', function() {
 
         m.runCommand('title', ['TITLE1', 'TITLE2']);
         expect(io_emit.lastCall.args).to.be.deep.equal([m.broadcastPath(), ['title', 'TITLE1', 'TITLE2']]);
+    });
+
+    it('alert', function() {
+        var m = new Client(CONTEXT);
+        // no argument
+        m.runCommand('alert');
+        expect(io_emit.called).to.be.false;
+
+        // empty argument
+        m.runCommand('alert', []);
+        expect(io_emit.called).to.be.false;
+        m.runCommand('alert', [1]);
+        expect(io_emit.called).to.be.false;
+        m.runCommand('alert', [1, 2]);
+        expect(io_emit.called).to.be.false;
+        m.runCommand('alert', [1, 2, 3, 4]);
+        expect(io_emit.called).to.be.false;
+
+        m.runCommand('alert', ['info', 'title', 'msg']);
+        expect(io_emit.lastCall.args).to.be.deep.equal([m.broadcastPath(), ['alert', 'info', 'title', 'msg']]);
     });
 });

@@ -57,7 +57,7 @@ function Client(app_global) {
     });
 
     this.addCommand('alert', 'shows alert modal window on all connected clients', function(args) {
-        if(args.length != 3) {
+        if(!args || args.length != 3) {
             log.error('alert:', 'invalid argument count');
             return;
         }

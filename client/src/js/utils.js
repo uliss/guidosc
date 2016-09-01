@@ -4,6 +4,10 @@ function random_int(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
+function is_server() {
+   return ! (typeof window != 'undefined' && window.document);
+}
+
 function cli_path(path) {
     return "/cli" + path;
 }
@@ -206,7 +210,7 @@ function shadeColor(color, percent) {
                 })
                 .reduce(add), percent);
         }
-        
+
         return null;
     } else {
         var hex = colorNameToHex(color);
@@ -223,6 +227,7 @@ module.exports.node_path = node_path;
 module.exports.sc_path = sc_path;
 module.exports.random_int = random_int;
 module.exports.log = log;
+module.exports.is_server = is_server;
 
 
 // funcs

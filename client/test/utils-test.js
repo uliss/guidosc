@@ -27,6 +27,10 @@ describe('utils', function() {
             expect(utils.random_int(-10, 0)).to.be.within(-10, 0);
     });
 
+    it('is_server', function() {
+        expect(utils.is_server()).to.be.true;
+    });
+
     it('shadeColor', function() {
         expect(utils.shadeColor('no-color', 0)).to.be.null;
         expect(utils.shadeColor('red', 0)).to.be.equal('#ff0000');

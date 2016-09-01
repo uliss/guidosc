@@ -46,12 +46,13 @@ function Server(app_global) {
         return VERSION;
     });
 
-    this.addCommand('quit', 'quit server', function() {
-        process.exit(0);
-    });
-
     this.registerModules();
     this.bindHttp();
+
+    this.onOSC(this.path(), function() {
+        this.notifyOnQuit();
+        process.exit(0);
+    });
 }
 
 inherits(Server, mod.Module);
@@ -130,6 +131,7 @@ Server.prototype.notifyOnBoot = function() {
 
 Server.prototype.notifyOnQuit = function() {
     this.oscSendArray(this.path(), ['quit']);
+    this.socketSendArray(this.path(), ['quit']);
 }
 
 module.exports = Server;

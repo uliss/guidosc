@@ -31,10 +31,13 @@ function sockInit(m) {
     SOCKET_RESULT.init();
 }
 
-function sockWrite(m, args) {
+function sockWrite(m) {
     var path = m.path();
-    var args = Array.prototype.slice.call(arguments, 0);
-    SOCKET_RESULT.emit.bind(SOCKET_RESULT, path)(args.slice(1));
+    var args = Array.prototype.slice.call(arguments, 1);
+    if (args.length > 0)
+        SOCKET_RESULT.emit.bind(SOCKET_RESULT, path).apply(SOCKET_RESULT, args);
+    else
+        SOCKET_RESULT.emit.bind(SOCKET_RESULT, path).call(SOCKET_RESULT);
 }
 
 function sockValue() {
@@ -108,5 +111,32 @@ describe('ServerTest', function() {
         expect(process.exit.lastCall.args).to.be.deep.equal([0]);
         expect(SPY_CONTEXT.osc.client.send.called).to.be.true;
         expect(SPY_CONTEXT.io.emit.called).to.be.true;
+    });
+
+    it('sync', function() {
+        var m = new Server(SPY_CONTEXT);
+        sockInit(m);
+        sockWrite(m, "sync_list");
+        expect(sockValue()).to.be.deep.equal([]);
+
+        // null argument
+        sockWrite(m, "sync_add");
+        sockWrite(m, "sync_list");
+        expect(sockValue()).to.be.deep.equal([]);
+
+        sockWrite(m, "sync_add", "/ui");
+        sockWrite(m, "sync_list");
+        expect(sockValue()).to.be.deep.equal(["/ui"]);
+
+        sockWrite(m, "sync_add", "/not-exists");
+        sockWrite(m, "sync_list");
+        expect(sockValue()).to.be.deep.equal(["/ui"]);
+
+        sockWrite(m, "sync_remove", "/ui");
+        sockWrite(m, "sync_list");
+        expect(sockValue()).to.be.deep.equal([]);
+
+        sockWrite(m, "sync_remove");
+        sockWrite(m, "sync_remove", "/not-exists");
     });
 });

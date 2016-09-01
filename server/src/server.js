@@ -26,15 +26,24 @@ function Server(app_global) {
 
     this.sync_pages = {};
 
-    this.addCommand('pages', 'list available pages', function(msg) {
+    this.addCommand('pages', 'list available pages', function() {
         return Object.keys(this.MODULE_ROUTES);
     });
 
     this.addCommand('sync_add', 'adds given url to sync list', function(args) {
+        if(!args || args.length === 0) return;
+        var url = args[0];
+
+        if(this.MODULE_ROUTES[url] === undefined) {
+            log.error('given URL not found on server: %s', url, {});
+            return;
+        }
+
         this.sync_pages[args[0]] = true;
     });
 
     this.addCommand('sync_remove', 'remove given url to sync list', function(args) {
+        if(!args || args.length === 0) return;
         delete this.sync_pages[args[0]];
     });
 

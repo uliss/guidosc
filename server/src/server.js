@@ -80,7 +80,7 @@ Server.prototype.hasSync = function(url) {
 Server.prototype.registerModules = function() {
     var self = this;
     for (url in this.MODULE_ROUTES) {
-        this.app().get(url, function(req, res) {
+        this.app_global.app.get(url, function(req, res) {
             var req_url = req['path'];
             var path = self.modulePath(req_url);
             // sync registered modules

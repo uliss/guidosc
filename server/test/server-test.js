@@ -118,6 +118,7 @@ describe('ServerTest', function() {
         sockInit(m);
         sockWrite(m, "sync_list");
         expect(sockValue()).to.be.deep.equal([]);
+        expect(m.hasSync("/ui")).to.be.false;
 
         // null argument
         sockWrite(m, "sync_add");
@@ -127,6 +128,7 @@ describe('ServerTest', function() {
         sockWrite(m, "sync_add", "/ui");
         sockWrite(m, "sync_list");
         expect(sockValue()).to.be.deep.equal(["/ui"]);
+        expect(m.hasSync("/ui")).to.be.true;
 
         sockWrite(m, "sync_add", "/not-exists");
         sockWrite(m, "sync_list");
@@ -135,6 +137,7 @@ describe('ServerTest', function() {
         sockWrite(m, "sync_remove", "/ui");
         sockWrite(m, "sync_list");
         expect(sockValue()).to.be.deep.equal([]);
+        expect(m.hasSync("/ui")).to.be.false;
 
         sockWrite(m, "sync_remove");
         sockWrite(m, "sync_remove", "/not-exists");

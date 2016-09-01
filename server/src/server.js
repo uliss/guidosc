@@ -31,10 +31,10 @@ function Server(app_global) {
     });
 
     this.addCommand('sync_add', 'adds given url to sync list', function(args) {
-        if(!args || args.length === 0) return;
+        if (!args || args.length === 0) return;
         var url = args[0];
 
-        if(this.MODULE_ROUTES[url] === undefined) {
+        if (this.MODULE_ROUTES[url] === undefined) {
             log.error('given URL not found on server: %s', url, {});
             return;
         }
@@ -43,7 +43,7 @@ function Server(app_global) {
     });
 
     this.addCommand('sync_remove', 'remove given url to sync list', function(args) {
-        if(!args || args.length === 0) return;
+        if (!args || args.length === 0) return;
         delete this.sync_pages[args[0]];
     });
 
@@ -58,7 +58,8 @@ function Server(app_global) {
     this.registerModules();
     this.bindHttp();
 
-    this.onOSC(this.path(), function() {
+    this.onOSC(this.path(), function(msg) {
+        if (msg[1] != 'quit') return;
         this.notifyOnQuit();
         process.exit(0);
     }.bind(this));

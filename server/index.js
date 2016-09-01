@@ -13,6 +13,7 @@ var Manager = require('./src/manager');
 var Client = require('./src/client.js');
 var UI = require('./src/ui');
 var Sound = require('./src/sound.js');
+var Forward = require('./src/forward.js');
 
 const NODE_PORT = 3000;
 const OSC_IN_PORT = 5000;
@@ -58,6 +59,7 @@ try {
     var client = new Client(APP_GLOBAL);
     var sound = new Sound(APP_GLOBAL);
     var ui = new UI(APP_GLOBAL);
+    var forward = new Forward(APP_GLOBAL);
 
     io.on('connection', function(socket) {
         client_manager.bindClient(socket);
@@ -66,6 +68,7 @@ try {
         timer.bindSocket(socket);
         sound.bindSocket(socket);
         ui.bindSocket(socket);
+        forward.bindSocket(socket);
     });
 
     http.listen(NODE_PORT, function() {

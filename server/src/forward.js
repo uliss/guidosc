@@ -11,7 +11,7 @@ function Forward(app_context) {
     this.bindOsc();
 }
 
-inherits(Ping, mod.Module);
+inherits(Forward, mod.Module);
 
 Forward.prototype.bindOsc = function() {
     var io = this.app_global.io;
@@ -44,11 +44,11 @@ Forward.prototype.bindSocket = function(socket) {
                     break;
                 case 1:
                     log.verbose('client => master:', path);
-                    self.oscClient().send(path);
+                    this.oscSendArray(path, []);
                 default:
                     {
                         log.verbose('client => master: %s %s', path, args.join(' '));
-                        self.oscClient().send(path, args);
+                        this.oscSendArray(path, args);
                     }
             }
         } catch (e) {

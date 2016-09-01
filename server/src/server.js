@@ -52,7 +52,6 @@ function Server(app_global) {
 
     this.registerModules();
     this.bindHttp();
-    this.bindOsc();
 }
 
 inherits(Server, mod.Module);
@@ -85,7 +84,7 @@ Server.prototype.registerModules = function() {
             var path = self.modulePath(req_url);
             // sync registered modules
             if (self.hasSync(req_url)) {
-                self.oscClient().send("/sync" + req_url);
+                this.oscSendArray("/sync", [req_url]);
             }
 
             getHttp(res, path);
@@ -125,57 +124,15 @@ Server.prototype.bindHttp = function() {
     });
 }
 
-Server.prototype.bindOsc = function() {
-    var osc_server = this.app_global.osc.server;
-    var io = this.app_global.io;
-
-    this.oscServer().on("/guido/forward", function(msg, rinfo) {
-        if (msg.length < 2) {
-            log.error("forward:", "invalid argument count");
-            return;
-        }
-
-        var path = msg[1];
-        var args = msg.slice(2);
-        log.verbose('master => client: %s %s', path, args.join(' '));
-        io.emit(path, args);
-    });
-}
-
-Server.prototype.bindSocket = function(socket) {
-    mod.Module.prototype.bindSocket.call(this, socket);
-    var self = this;
-
-    socket.on("/guido/forward", function(msg) {
-        try {
-            var path = msg[0];
-            var args = msg.slice(1);
-
-            switch (msg.length) {
-                case 0:
-                    log.error("Invalid forward message format. Should be: DEST_PATH [ARGS]");
-                    break;
-                case 1:
-                    log.verbose('client => master:', path);
-                    self.oscClient().send(path);
-                default:
-                    {
-                        log.verbose('client => master: %s %s', path, args.join(' '));
-                        self.oscClient().send(path, args);
-                    }
-            }
-        } catch (e) {
-            log.error(e.message);
-        }
-    });
-}
-
 Server.prototype.notifyOnBoot = function() {
-    this.oscClient().send(this.path(), 'boot');
+    this.oscSendArray(this.path(), ['boot']);
 }
 
 Server.prototype.notifyOnQuit = function() {
-    this.oscClient().send(this.path(), 'quit');
+    this.oscSendArray(this.path(), ['quit']);
 }
 
 module.exports = Server;
+module.exports._test = {
+    log: log
+};

@@ -87,29 +87,24 @@ Server.prototype.hasSync = function(url) {
 }
 
 Server.prototype.registerModules = function() {
-    var self = this;
     for (url in this.MODULE_ROUTES) {
         this.app_global.app.get(url, function(req, res) {
             var req_url = req['path'];
-            var path = self.modulePath(req_url);
+            var path = this.modulePath(req_url);
             // sync registered modules
-            if (self.hasSync(req_url)) {
+            if (this.hasSync(req_url)) {
                 this.oscSendArray("/sync", [req_url]);
             }
 
             getHttp(res, path);
-        });
+        }.bind(this));
     }
 }
 
 Server.prototype.bindHttp = function() {
     var app = this.app_global.app;
 
-    // serve CSS files
-    app.get('/css/*.css', function(req, res) {
-        getHttp(res, req['path']);
-    });
-
+    // serve CSS files and fonts
     app.get('/css/*', function(req, res) {
         getHttp(res, req['path']);
     });

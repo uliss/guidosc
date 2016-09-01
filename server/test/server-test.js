@@ -1,4 +1,7 @@
 // var fs = require('fs');
+var http = require('http');
+var app = require('express')();
+var http_server = http.Server(app);
 var chai = require('chai');
 var sinon = require('sinon');
 var expect = chai.expect;
@@ -142,4 +145,61 @@ describe('ServerTest', function() {
         sockWrite(m, "sync_remove");
         sockWrite(m, "sync_remove", "/not-exists");
     });
+
+    describe('http', function() {
+        var self = this;
+        this.server = null;
+
+        before(function() {
+            http_server.listen(8000);
+            SPY_CONTEXT.app = app;
+            this.server = new Server(SPY_CONTEXT);
+            this.server.sync_pages['/ui'] = true;
+        }.bind(this));
+
+        after(function() {
+            http_server.close();
+        });
+
+        it('should return 200', function(done) {
+            http.get('http://localhost:8000/', function(res) {
+                expect(res.statusCode).to.be.equal(200);
+            });
+
+            http.get('http://localhost:8000/ui', function(res) {
+                expect(res.statusCode).to.be.equal(200);
+            });
+
+            http.get('http://localhost:8000/css/global.css', function(res) {
+                expect(res.statusCode).to.be.equal(200);
+            });
+
+            http.get('http://localhost:8000/js/lib/bootstrap-slider.min.js', function(res) {
+                expect(res.statusCode).to.be.equal(200);
+            });
+
+            done();
+        });
+
+        it('should return 404', function(done) {
+            http.get('http://localhost:8000/not-found', function(res) {
+                expect(res.statusCode).to.be.equal(404);
+            });
+
+            http.get('http://localhost:8000/css/not-exists.txt', function(res) {
+                expect(res.statusCode).to.be.equal(404);
+            });
+
+            done();
+        });
+
+        it('should send sync', function(done) {
+            http.get('http://localhost:8000/ui', function(res) {
+                expect(res.statusCode).to.be.equal(200);
+                expect(SPY_CONTEXT.osc.client.send.called).to.be.true;
+                expect(SPY_CONTEXT.osc.client.send.lastCall.args).to.be.deep.equal(['/sync', '/ui']);
+                done();
+            });
+        });
+    })
 });

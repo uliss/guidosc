@@ -5,6 +5,9 @@ var expect = chai.expect;
 var t = require('../src/module.js')._test;
 
 var CONTEXT = {
+    app: {
+        get: function() {}
+    },
     io: {
         emit: function() {}
     },

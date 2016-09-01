@@ -100,14 +100,13 @@ describe('ServerTest', function() {
         ]);
     });
 
-
-    //
-    // it('quit', function() {
-    //     sandbox.stub(process, 'exit');
-    //     var m = new Server(SPY_CONTEXT);
-    //     sockInit(m);
-    //     sockWrite(m, "quit");
-    //     expect(process.exit.called).to.be.true;
-    //     expect(process.exit.lastCall.args).to.be.deep.equal([0]);
-    // });
+    it('quit', function() {
+        sandbox.stub(process, 'exit');
+        var m = new Server(SPY_CONTEXT);
+        SPY_CONTEXT.testOSC(m.path(), 'quit');
+        expect(process.exit.called).to.be.true;
+        expect(process.exit.lastCall.args).to.be.deep.equal([0]);
+        expect(SPY_CONTEXT.osc.client.send.called).to.be.true;
+        expect(SPY_CONTEXT.io.emit.called).to.be.true;
+    });
 });

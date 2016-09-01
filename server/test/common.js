@@ -77,10 +77,10 @@ var CONTEXT = {
     },
     testOSC: function(args) {
         this.osc.server.testMsg.apply(this.osc.server, arguments)
-    },
-    testSocket: function(args) {
-        this.osc.server.testMsg.apply(this.osc.server, arguments)
     }
+    // testSocket: function(args) {
+    //     this.osc.server.testMsg.apply(this.osc.server, arguments)
+    // }
 };
 
 var socket = {

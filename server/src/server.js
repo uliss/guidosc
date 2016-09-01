@@ -52,7 +52,7 @@ function Server(app_global) {
     this.onOSC(this.path(), function() {
         this.notifyOnQuit();
         process.exit(0);
-    });
+    }.bind(this));
 }
 
 inherits(Server, mod.Module);

@@ -8,20 +8,24 @@ describe('ping.js test', function() {
 
     before(function() {
         b = atomus()
-            .html('<div id="#nav_ui_connection_indicator"></div>')
+            .html('<div id="nav_ui_connection_indicator"></div>')
             .external(__dirname + '/../../build/js/jquery.min.js');
     }.bind(this));
 
 
     it('ping', function(done) {
+        this.timeout(4000);
         b.ready(function(errors, window) {
             $ = this.$;
-            ping.pingStart();
-            var el = $("div");
-            expect(el).to.be.not.empty;
-            expect(el.length).to.be.above(0);
-            expect(el.attr('id')).to.be.equal('#nav_ui_connection_indicator');
-            done();
+            ping._test.update_indicator();
+
+            setTimeout(function() {
+                var el = $("#nav_ui_connection_indicator");
+                expect(el.hasClass('nav_ui_indicator_disconnected')).to.be.true;
+                expect(el.hasClass('nav_ui_indicator_connected')).to.be.false;
+                done();
+            }, 1500);
+            //
         });
     });
 });

@@ -5,7 +5,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var osc = require('node-osc');
 var npid = require('npid');
-var timer = require('./src/timer');
+var ServerTimer = require('./src/timer.js').ServerTimer;
 var utils = require('./src/utils');
 var Server = require('./src/server');
 var Ping = require('./src/ping');
@@ -28,7 +28,9 @@ APP_GLOBAL.http = http;
 APP_GLOBAL.app = app;
 APP_GLOBAL.io = io;
 
-try {
+var connectionl
+
+function start() {
     try {
         fs.accessSync(SERVER_ROOT, fs.F_OK);
     } catch (e) {
@@ -55,7 +57,7 @@ try {
     var server = new Server(APP_GLOBAL);
     var client_manager = new Manager(APP_GLOBAL);
     var ping = new Ping(APP_GLOBAL);
-    var timer = new timer.ServerTimer(APP_GLOBAL);
+    var timer = new ServerTimer(APP_GLOBAL);
     var client = new Client(APP_GLOBAL);
     var sound = new Sound(APP_GLOBAL);
     var ui = new UI(APP_GLOBAL);
@@ -71,14 +73,24 @@ try {
         forward.bindSocket(socket);
     });
 
-    http.listen(NODE_PORT, function() {
+    connection = http.listen(NODE_PORT, function() {
         log.info('GuidoSC server started');
         log.info('listening HTTP on *:' + NODE_PORT);
         log.info('listening OSC on *:' + OSC_IN_PORT);
         log.info('sending OSC to localhost:' + OSC_OUT_PORT);
         server.notifyOnBoot();
     });
-} catch (err) {
-    log.error(err.message);
-    process.exit(1);
 }
+
+module.exports.start = function() {
+    try {
+        start();
+    } catch (err) {
+        log.error(err.message);
+        process.exit(1);
+    }
+};
+
+module.exports.stop = function() {
+    connection.close();
+};

@@ -1,24 +1,29 @@
 var chai = require('chai');
 var expect = chai.expect;
-// var server = require('../index.js');
-// var io = require('socket.io-client');
-// var osc = require('node-osc');
-// var sinon = require('sinon');
-// var osc_server = new osc.Server(5001, '0.0.0.0');
-//
-// var client;
-// var options = {
-//     transports: ['websocket'],
-//     'force new connection': true
-// };
+process.setMaxListeners(0);
+var server = require('../index.js');
+var io = require('socket.io-client');
+var osc = require('node-osc');
+var sinon = require('sinon');
+var OSC_PORT = 9876;
+var osc_server;
 
-xdescribe('real connection tests', function() {
+var client;
+var options = {
+    transports: ['websocket'],
+    'force new connection': true
+};
+
+describe('real connection tests', function() {
     before(function() {
-        server.start();
+        osc_server = new osc.Server(OSC_PORT, '0.0.0.0');
+        server.start(OSC_PORT);
     });
 
     after(function() {
         server.stop();
+        osc_server.kill();
+        // delete osc_server;
     });
 
     describe('Socket.IO tests', function() {

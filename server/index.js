@@ -28,7 +28,9 @@ APP_GLOBAL.http = http;
 APP_GLOBAL.app = app;
 APP_GLOBAL.io = io;
 
-var connectionl
+var connection;
+var oscServer;
+var oscClient;
 
 function start(oscOutPort) {
     if (!oscOutPort)
@@ -50,8 +52,8 @@ function start(oscOutPort) {
     var pid = npid.create(PID_FILE);
     pid.removeOnExit();
 
-    var oscServer = new osc.Server(OSC_IN_PORT, '0.0.0.0');
-    var oscClient = new osc.Client('127.0.0.1', oscOutPort);
+    oscServer = new osc.Server(OSC_IN_PORT, '0.0.0.0');
+    oscClient = new osc.Client('127.0.0.1', oscOutPort);
 
     APP_GLOBAL.osc = {};
     APP_GLOBAL.osc.server = oscServer;
@@ -95,6 +97,10 @@ module.exports.start = function(oscOutPort) {
 };
 
 module.exports.stop = function() {
+    log.info('quit');
+    oscServer.kill();
+    oscClient.kill();
+    http.close();
     connection.close();
 };
 

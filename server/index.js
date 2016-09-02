@@ -11,7 +11,6 @@ var Server = require('./src/server');
 var Ping = require('./src/ping');
 var Manager = require('./src/manager');
 var Client = require('./src/client.js');
-var UI = require('./src/ui');
 var Sound = require('./src/sound.js');
 var Forward = require('./src/forward.js');
 
@@ -65,7 +64,6 @@ function start(oscOutPort) {
     var timer = new ServerTimer(APP_GLOBAL);
     var client = new Client(APP_GLOBAL);
     var sound = new Sound(APP_GLOBAL);
-    var ui = new UI(APP_GLOBAL);
     var forward = new Forward(APP_GLOBAL);
 
     io.on('connection', function(socket) {
@@ -74,7 +72,6 @@ function start(oscOutPort) {
         ping.bindSocket(socket);
         timer.bindSocket(socket);
         sound.bindSocket(socket);
-        ui.bindSocket(socket);
         forward.bindSocket(socket);
     });
 

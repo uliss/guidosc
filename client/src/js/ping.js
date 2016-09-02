@@ -41,7 +41,7 @@ function update_indicator() {
 }
 
 function start(update_time) {
-    if (!update_time) update_time = 4000;
+    if (!update_time) update_time = 10000;
 
     update_indicator();
     var ping_interval_obj = setInterval(update_indicator, update_time);

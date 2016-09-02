@@ -18,7 +18,7 @@ mod.records = require('./modules/records.js');
 
 page.init();
 menu.init();
-ping.start(4000);
+ping.start(10000);
 
 window.app_tone_run = app_tone.main;
 window.app_timer_run = app_timer.main;

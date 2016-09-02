@@ -1,3 +1,4 @@
+var express = require('express');
 var utils = require('./utils');
 var log = utils.log('server');
 var mod = require('./module.js');
@@ -105,29 +106,10 @@ Server.prototype.registerModules = function() {
 Server.prototype.bindHttp = function() {
     var app = this.app_global.app;
 
-    // serve CSS files and fonts
-    app.get('/css/*', function(req, res) {
-        getHttp(res, req['path']);
-    });
-
-    // serve JS lib files
-    app.get('/js/*', function(req, res) {
-        getHttp(res, req['path']);
-    });
-
-    // serve images files
-    app.get('/img/*.jpg', function(req, res) {
-        getHttp(res, req['path']);
-    });
-
-    app.get('/img/*.png', function(req, res) {
-        getHttp(res, req['path']);
-    });
-
-    // serve WAV files
-    app.get('/sound/*.wav', function(req, res) {
-        getHttp(res, decodeURI(req['path']));
-    });
+    app.use("/js", express.static(__dirname + '/../../build/js'));
+    app.use("/css", express.static(__dirname + '/../../build/css'));
+    app.use("/img", express.static(__dirname + '/../../build/img'));
+    app.use("/sound", express.static(__dirname + '/../../build/sound'));
 }
 
 Server.prototype.notifyOnBoot = function() {

@@ -6,7 +6,8 @@ var t = require('../src/module.js')._test;
 
 var CONTEXT = {
     app: {
-        get: function() {}
+        get: function() {},
+        use: function() {}
     },
     io: {
         emit: function() {}

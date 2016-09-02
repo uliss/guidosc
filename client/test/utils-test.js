@@ -2,7 +2,7 @@ var chai = require('chai');
 var expect = chai.expect;
 var utils = require('../src/js/utils.js');
 
-describe('utils', function() {
+describe('Client: utils.js test', function() {
     it('add', function() {
         expect(utils.add(2, 3)).to.be.equal(5);
         expect(utils.add(3, 2)).to.be.equal(5);

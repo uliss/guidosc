@@ -118,6 +118,23 @@ describe('real connection tests', function() {
     });
 
     describe('OSC:', function() {
+        before(function() {
+            client = io.connect("http://localhost:3000", options);
+        });
 
+        after(function() {
+            if (client)
+                client.disconnect();
+        });
+
+        it('forward', function(done) {
+            client.once("connect", function() {
+                osc_client.send("/guido/forward", "/url", 1, 2, 3);
+                client.once("/url", function(data) {
+                    expect(data).to.be.deep.equal([1, 2, 3]);
+                    done();
+                });
+            });
+        });
     });
 });

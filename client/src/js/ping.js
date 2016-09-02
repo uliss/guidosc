@@ -6,7 +6,7 @@ var PING_PATH = "/guido/ping";
 function ping_return() {
     return new Promise(function(resolve, reject) {
         server.send_to_sc(PING_PATH);
-        server.from_sc(PING_PATH, function(msg) {
+        server.on(PING_PATH, function(msg) {
             resolve();
         });
 
@@ -44,7 +44,9 @@ function start(update_time) {
     if (!update_time) update_time = 10000;
 
     update_indicator();
-    var ping_interval_obj = setInterval(update_indicator, update_time);
+    var ping_interval_obj = setInterval(function() {
+        update_indicator();
+    }, update_time);
 }
 
 module.exports.start = start;

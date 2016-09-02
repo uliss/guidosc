@@ -1,11 +1,6 @@
 var io = require('socket.io-client');
 var utils = require('./utils.js');
-var socket;
-if (utils.is_server()) {
-    socket = io('http://localhost');
-} else {
-    socket = io();
-}
+var socket = io();
 
 var debug = false;
 
@@ -21,6 +16,10 @@ function send_to_sc(path, var_args) {
 
 function from_sc(path, func) {
     socket.on(path, func);
+}
+
+function once_from_sc(path, func) {
+    socket.once(path, func);
 }
 
 function send(path, args, fn) {

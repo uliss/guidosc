@@ -1,4 +1,3 @@
-// var fs = require('fs');
 var http = require('http');
 var app = require('express')();
 var http_server = http.Server(app);
@@ -12,22 +11,6 @@ var SOCKET_RESULT = c.SOCKET_RESULT;
 
 // disable logging
 sinon.stub(Server._test.log, "log");
-
-// function mkdir() {
-//     fs.mkdirSync(TMP_DIR);
-// }
-//
-// function mktmp(name) {
-//     fs.closeSync(fs.openSync(TMP_DIR + '/' + name, 'w'));
-// }
-//
-// function rmdir() {
-//     fs.readdirSync(TMP_DIR).forEach(function(f) {
-//         fs.unlinkSync(TMP_DIR + '/' + f);
-//     });
-//     fs.rmdirSync(TMP_DIR);
-// }
-
 
 function sockInit(m) {
     m.bindSocket(SPY_CONTEXT.socket);
@@ -55,13 +38,10 @@ describe('ServerTest', function() {
         sandbox = sinon.sandbox.create();
         SPY_CONTEXT.reset();
         SPY_CONTEXT.init(sandbox);
-        // io_emit = SPY_CONTEXT.io.emit;
-        // mkdir();
     });
 
     afterEach(function() {
         sandbox.restore();
-        // rmdir();
     });
 
     it('new Server', function() {

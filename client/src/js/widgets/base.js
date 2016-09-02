@@ -94,10 +94,10 @@ BaseWidget.prototype.send = function() {
     if(!this.send_enable) return;
 
     var args = Array.prototype.slice.call(arguments);
-    args.unshift(this.id());
-    var full_path = "/node" + this.oscPath();
+    var full_path = "/guido" + this.oscPath() + '/' + this.id();
+    args.unshift(full_path);
     // log("socket send:", full_path, JSON.stringify(msg));
-    server.send(full_path, args);
+    server.send_to_sc.apply(server, args);
 };
 
 BaseWidget.prototype.jQ = function() {

@@ -9,7 +9,11 @@ if (utils.is_server()) {
 
 var debug = false;
 
-function send_to_sc(path) {
+/**
+ * @param {string} path - destination path on master
+ * @param {array} var_args
+ */
+function send_to_sc(path, var_args) {
     var args = [path].concat(Array.prototype.slice.call(arguments, 1));
     if (debug) console.log(args);
     socket.emit("/guido/forward", args);

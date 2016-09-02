@@ -1,17 +1,23 @@
 var widgets = require('../widgets');
 var server = require('../server.js');
 var utils = require('../utils.js');
-var cli_path = utils.cli_path;
 
 var HIDDEN_TARGET = 'ui-elements-hidden';
-var PATH_ADD = cli_path('/widget/add');
-var PATH_UPDATE = cli_path('/widget/update');
-var PATH_REMOVE = cli_path('/widget/remove');
-var PATH_REMOVE_ALL = cli_path('/widget/removeAll');
-var PATH_COMMAND = cli_path('/widget/command');
+var PATH_ADD = '/guido/widget/add';
+var PATH_UPDATE = '/guido/widget/update';
+var PATH_REMOVE = '/guido/widget/remove';
+var PATH_REMOVE_ALL = '/guido/widget/removeAll';
+var PATH_COMMAND = '/guido/widget/command';
 
 function bindOsc() {
     server.on(PATH_ADD, function(msg) {
+        if(!msg || !msg.length) {
+            console.log("ERROR: no widget data!");
+            return;
+        }
+
+        msg = JSON.parse(msg[0]);
+
         if (!msg.idx) {
             console.log("ERROR: no widget id!");
             return;

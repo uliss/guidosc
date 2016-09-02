@@ -5,9 +5,10 @@ var server = require('../index.js');
 var io = require('socket.io-client');
 var osc = require('node-osc');
 var sinon = require('sinon');
+
 var OSC_PORT = 9876;
 var osc_server;
-
+var osc_client;
 var client;
 var options = {
     transports: ['websocket'],
@@ -17,15 +18,17 @@ var options = {
 describe('real connection tests', function() {
     before(function() {
         osc_server = new osc.Server(OSC_PORT, '0.0.0.0');
+        osc_client = new osc.Client('127.0.0.1', 5000);
         server.start(OSC_PORT);
     });
 
     after(function() {
         server.stop();
         osc_server.kill();
+        osc_client.kill();
     });
 
-    describe('Socket.IO tests', function() {
+    describe('Socket.IO:', function() {
         beforeEach(function() {
             client = io.connect("http://localhost:3000", options);
         });
@@ -112,5 +115,9 @@ describe('real connection tests', function() {
                 });
             });
         });
+    });
+
+    describe('OSC:', function() {
+
     });
 });

@@ -98,10 +98,11 @@ module.exports.start = function(oscOutPort) {
 
 module.exports.stop = function() {
     log.info('quit');
-    oscServer.kill();
-    oscClient.kill();
+    io.close();
     http.close();
     connection.close();
+    oscServer.kill();
+    oscClient.kill();
 };
 
 module.exports._test = {

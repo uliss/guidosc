@@ -23,7 +23,6 @@ describe('real connection tests', function() {
     after(function() {
         server.stop();
         osc_server.kill();
-        // delete osc_server;
     });
 
     describe('Socket.IO tests', function() {
@@ -78,6 +77,39 @@ describe('real connection tests', function() {
             client.once("connect", function() {
                 client.disconnect();
                 client = null;
+            });
+        });
+
+        describe('forward tests', function() {
+            it("forward ok", function(done) {
+                client.once("connect", function() {
+                    client.emit("/guido/forward", ["/url", "arg1", "arg2"]);
+                });
+
+                osc_server.once("/url", function(msg) {
+                    expect(msg).to.be.deep.equal(["/url", "arg1", "arg2"]);
+                    done();
+                });
+            });
+
+            it("forward url only", function(done) {
+                client.once("connect", function() {
+                    client.emit("/guido/forward", "/url");
+                });
+
+                osc_server.once("/url", function(msg) {
+                    expect(msg).to.be.deep.equal(["/url"]);
+                    done();
+                });
+            });
+
+            it("forward error", function(done) {
+                client.once("connect", function() {
+                    client.emit("/guido/forward", [], function(err) {
+                        console.log(err);
+                        done();
+                    });
+                });
             });
         });
     });

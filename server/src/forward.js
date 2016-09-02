@@ -32,15 +32,18 @@ Forward.prototype.bindOsc = function() {
 Forward.prototype.bindSocket = function(socket) {
     mod.Module.prototype.bindSocket.call(this, socket);
 
-    socket.on("/guido/forward", function(msg) {
+    socket.on("/guido/forward", function(msg, fn) {
         try {
+            if (!msg || msg.length == 0) {
+                throw new Error("Invalid forward message format. Should be: DEST_PATH [ARGS]");
+            }
+
+            if (!Array.isArray(msg)) msg = [msg]
+
             var path = msg[0];
             var args = msg.slice(1);
 
             switch (msg.length) {
-                case 0:
-                    log.error("Invalid forward message format. Should be: DEST_PATH [ARGS]");
-                    break;
                 case 1:
                     log.debug('client => master:', path);
                     this.oscSendArray(path, []);
@@ -52,6 +55,9 @@ Forward.prototype.bindSocket = function(socket) {
             }
         } catch (e) {
             log.error(e.message);
+            if (fn) {
+                fn(e.message);
+            }
         }
     }.bind(this));
 };

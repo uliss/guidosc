@@ -30,7 +30,10 @@ APP_GLOBAL.io = io;
 
 var connectionl
 
-function start() {
+function start(oscOutPort) {
+    if (!oscOutPort)
+        oscOutPort = OSC_OUT_PORT;
+
     try {
         fs.accessSync(SERVER_ROOT, fs.F_OK);
     } catch (e) {
@@ -48,7 +51,7 @@ function start() {
     pid.removeOnExit();
 
     var oscServer = new osc.Server(OSC_IN_PORT, '0.0.0.0');
-    var oscClient = new osc.Client('127.0.0.1', OSC_OUT_PORT);
+    var oscClient = new osc.Client('127.0.0.1', oscOutPort);
 
     APP_GLOBAL.osc = {};
     APP_GLOBAL.osc.server = oscServer;
@@ -82,9 +85,9 @@ function start() {
     });
 }
 
-module.exports.start = function() {
+module.exports.start = function(oscOutPort) {
     try {
-        start();
+        start(oscOutPort);
     } catch (err) {
         log.error(err.message);
         process.exit(1);
@@ -93,4 +96,8 @@ module.exports.start = function() {
 
 module.exports.stop = function() {
     connection.close();
+};
+
+module.exports._test = {
+    log: log
 };

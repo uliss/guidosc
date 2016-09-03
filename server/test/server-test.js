@@ -177,7 +177,7 @@ describe('ServerTest', function() {
             http.get('http://localhost:8000/ui', function(res) {
                 expect(res.statusCode).to.be.equal(200);
                 expect(SPY_CONTEXT.osc.client.send.called).to.be.true;
-                expect(SPY_CONTEXT.osc.client.send.lastCall.args).to.be.deep.equal(['/sync', '/ui']);
+                expect(SPY_CONTEXT.osc.client.send.lastCall.args).to.be.deep.equal(['/guido/sync/ui']);
                 done();
             });
         });

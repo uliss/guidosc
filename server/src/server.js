@@ -95,7 +95,8 @@ Server.prototype.registerModules = function() {
             var path = this.modulePath(req_url);
             // sync registered modules
             if (this.hasSync(req_url)) {
-                this.oscSendArray("/sync", [req_url]);
+                log.verbose("sync url: %s", req_url, {});
+                this.oscSendArray("/guido/sync" + req_url, []);
             }
 
             getHttp(res, path);

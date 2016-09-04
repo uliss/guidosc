@@ -68,6 +68,8 @@ function bindOsc() {
     });
 
     server.on(PATH_COMMAND, function(msg) {
+        msg = JSON.parse(msg[0]);
+
         if (!msg.idx) {
             console.log("ERROR: no widget id!");
             return;
@@ -76,6 +78,8 @@ function bindOsc() {
     });
 
     server.on(PATH_UPDATE, function(msg) {
+        msg = JSON.parse(msg[0]);
+
         if (!msg.idx) {
             console.log("ERROR: no widget id!");
             return;

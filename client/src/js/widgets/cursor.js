@@ -22,23 +22,27 @@ var bg_yoff;
 
 $(document).ready(function() {
     getBackgroundSize();
-    updateBackgroundScale();
 });
 
-function getBackgroundSize() {
+function getBackgroundSize(fn) {
     var url = $('html').css('background-image').replace(/url\((['"])?(.*?)\1\)/gi, '$2');
-    // var img = new Image();
-    // img.src = url;
-    // bg_width = img.width;
-    // bg_height = img.height;
+    if (url === 'none') {
+        setTimeout(function() {
+            getBackgroundSize(fn);
+        }, 500);
+        return;
+    };
 
     $('<img/>').attr('src', url).load(function() {
-        console.log(this.width);
+
         bg_width = this.width;
         bg_height = this.height;
 
+        // console.log(this.width);
         // console.log(bg_width + 'x' + bg_height);
         updateBackgroundScale();
+
+        if (fn) fn.call();
     });
 }
 
@@ -64,7 +68,7 @@ function updateBackgroundScale() {
 function cursorCoords(x, y) {
     if (!bg_width) {
         getBackgroundSize();
-        updateBackgroundScale();
+        return;
     }
 
     var cursor_x = ((x - bg_xoff) * bg_xscale).toFixed();
@@ -111,10 +115,10 @@ function Cursor(params) {
     if (params.x) this.relLeft = params.x;
     if (params.y) this.relTop = params.y;
 
-    getBackgroundSize();
-    updateBackgroundScale();
-    this.updatePos();
     var self = this;
+    getBackgroundSize(function() {
+        self.updatePos();
+    });
 
     cursor.onmousedown = function(e) {
         if (e.which != 1) { // если клик правой кнопкой мыши
@@ -173,8 +177,13 @@ Cursor.prototype.setRel = function(x, y) {
 Cursor.prototype.updatePos = function() {
     var cursor = this.cursor.get(0);
     var coords = getCoords(cursor);
-    cursor.style.left = ((this.relLeft / bg_xscale) + bg_xoff - coords.width / 2) + 'px';
-    cursor.style.top = ((this.relTop / bg_yscale) + bg_yoff - coords.height / 2) + 'px';
+    var x = ((this.relLeft / bg_xscale) + bg_xoff - coords.width / 2).toFixed();
+    var y = ((this.relTop / bg_yscale) + bg_yoff - coords.height / 2).toFixed();
+    this.cursor.css("left", x + 'px');
+    this.cursor.css("top", y + 'px');
+
+    // cursor.style.left = x + 'px';
+    // cursor.style.top = y + 'px';
     this.updateDims();
 };
 
@@ -183,6 +192,11 @@ Cursor.prototype.command = function(cmd) {
         this.setRel(cmd.rel[0], cmd.rel[1]);
         console.log(cmd.rel);
     }
+};
+
+Cursor.prototype.destroy = function() {
+    this.cursor.remove();
+    jqw.JQueryWidget.destroy.call(this);
 };
 
 function create(params) {

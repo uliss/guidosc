@@ -31,7 +31,7 @@ function getBackgroundSize(fn) {
             getBackgroundSize(fn);
         }, 500);
         return;
-    };
+    }
 
     $('<img/>').attr('src', url).load(function() {
 

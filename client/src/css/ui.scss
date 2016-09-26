@@ -109,6 +109,9 @@ button.btn-lg {
         }
     }
 }
+.ui-layout-box > .ui-layout-box {
+    margin: 0 0;
+}
 .ui-layout-hbox {
     canvas, .ui-layout-vbox {
         display: inline-block;

@@ -16,7 +16,7 @@ inherits(Button, nxw.NexusWidget);
 
 function create(params) {
     var w = new Button(params);
-    w.bind('press', function(data) {
+    w.bindTo('press', function(data) {
         w.send(data);
     });
     return w;

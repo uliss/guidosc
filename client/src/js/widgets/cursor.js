@@ -190,7 +190,14 @@ Cursor.prototype.updatePos = function() {
 Cursor.prototype.command = function(cmd) {
     if (cmd.rel) {
         this.setRel(cmd.rel[0], cmd.rel[1]);
-        console.log(cmd.rel);
+    }
+
+    if (cmd.pulse) {
+        this.cursor.animate({
+            opacity: 0.6
+        }, 200, function() {
+            this.cursor.css("opacity", 0.33);
+        }.bind(this));
     }
 };
 

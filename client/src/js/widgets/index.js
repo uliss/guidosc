@@ -25,6 +25,7 @@ create_functions.hbox = require('./hbox.js');
 create_functions.vbox = require('./vbox.js');
 create_functions.params = require('./params.js');
 create_functions.cursor = require('./cursor.js');
+create_functions.vu = require('./vu.js');
 
 function log(msg) {
     var args = Array.prototype.slice.call(arguments, 0);

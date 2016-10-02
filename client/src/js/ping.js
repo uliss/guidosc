@@ -1,37 +1,55 @@
 var server = require('./server.js');
+var utils = require('./utils.js');
 
-var ping_interval_obj = null;
-var ping_answered = false;
+var PING_PATH = "/guido/ping";
 
-function ping_start(time) {
-    if(!time) time = 4000;
+function ping_return() {
+    return new Promise(function(resolve, reject) {
+        server.send_to_sc(PING_PATH);
+        server.on(PING_PATH, function(msg) {
+            resolve();
+        });
 
-    var el = $("#nav_ui_connection_indicator");
-    server.send("/node/ping");
-
-    ping_interval_obj = setInterval(function(){
-        server.send("/node/ping");
-        ping_answered = false;
-
-        setTimeout(function(){
-            if(!ping_answered) {
-                el.removeClass("nav_ui_indicator_connected");
-                el.addClass("nav_ui_indicator_disconnected");
-            }
+        setTimeout(function() {
+            reject(new Error("ping timeout!"));
         }, 1000);
-    }, time);
-
-    server.on('/cli/pong', function(msg) {
-        el.removeClass("nav_ui_indicator_disconnected");
-        el.addClass("nav_ui_indicator_connected");
-        ping_answered = true;
     });
 }
 
-function start() {
-    $(document).ready(function(){
-        ping_start();
-    });
+function set_indicator_state(state) {
+    var indicator = $("#nav_ui_connection_indicator");
+
+    if (state) {
+        indicator.removeClass("nav_ui_indicator_disconnected");
+        indicator.addClass("nav_ui_indicator_connected");
+    } else {
+        indicator.removeClass("nav_ui_indicator_connected");
+        indicator.addClass("nav_ui_indicator_disconnected");
+    }
+}
+
+function update_indicator() {
+    ping_return()
+        .then(
+            function() {
+                set_indicator_state(true);
+            },
+            function(error) {
+                set_indicator_state(false);
+            }
+        );
+}
+
+function start(update_time) {
+    if (!update_time) update_time = 10000;
+
+    update_indicator();
+    var ping_interval_obj = setInterval(function() {
+        update_indicator();
+    }, update_time);
 }
 
 module.exports.start = start;
+module.exports._test = {
+    update_indicator: update_indicator
+};

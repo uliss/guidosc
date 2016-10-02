@@ -6,7 +6,7 @@ var utils = require('../utils.js');
 function promise_records_get() {
     return new Promise(function(resolve, reject) {
         server.send("/guido/module/sound", "playlist", function(data) {
-            resolve(JSON.parse(data));
+            resolve(data);
         });
 
         setTimeout(function() {

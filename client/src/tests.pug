@@ -7,6 +7,7 @@ html(lang="en-US")
         meta(http-equiv="X-UA-Compatible" content="IE=edge")
         title Mocha tests
         script(src="/js/lib/jquery.js")
+        script(src="/js/bundle.js")
             //- подключаем стили Mocha, для отображения результатов
         link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.1.0/mocha.css")
             //- подключаем библиотеку Mocha
@@ -18,7 +19,7 @@ html(lang="en-US")
             //- подключаем chai
         script(src="https://cdnjs.cloudflare.com/ajax/libs/chai/2.0.0/chai.js").
             //- в chai есть много всего, выносим assert в глобальную область
-            var assert = chai.assert;
+            var expect = chai.expect;
     body
         script.
             function pow(x, n) {

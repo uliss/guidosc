@@ -4,29 +4,36 @@ var socket = io();
 
 var debug = false;
 
-function send_to_sc(path) {
-    var args = [utils.sc_path(path)].concat(Array.prototype.slice.call(arguments, 1));
-    if(debug) console.log(args);
+/**
+ * @param {string} path - destination path on master
+ * @param {array} var_args
+ */
+function send_to_sc(path, var_args) {
+    var args = [path].concat(Array.prototype.slice.call(arguments, 1));
+    if (debug) console.log(args);
     socket.emit("/guido/forward", args);
 }
 
 function from_sc(path, func) {
-    socket.on(utils.cli_path(path), func);
+    socket.on(path, func);
+}
+
+function once_from_sc(path, func) {
+    socket.once(path, func);
 }
 
 function send(path, args, fn) {
-    if(args === undefined)
+    if (args === undefined)
         socket.emit(path);
     else
         socket.emit(path, args, fn);
 }
 
 function on(path, callback) {
-    socket.on(path, function(msg){
+    socket.on(path, function(msg) {
         callback(msg);
     });
 }
-
 
 module.exports.send = send;
 module.exports.on = on;

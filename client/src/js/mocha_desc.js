@@ -1,8 +1,8 @@
-var assert = chai.assert;
+var expect = chai.expect;
 
 describe("pow", function() {
 
     it("возводит в n-ю степень", function() {
-        assert.equal(pow(2, 3), 8);
-    });    
+        expect(pow(2, 3)).to.be.equal(8);
+    });
 });

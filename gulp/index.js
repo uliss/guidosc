@@ -169,7 +169,9 @@ module.exports.add = function() {
     gulp.task('copy_bower', function(cb) {
         pump([
             gulp.src([
-                './bower_components/jquery/dist/jquery*.js'
+                './bower_components/jquery/dist/jquery*.js',
+                './bower_components/jasmine-core/lib/jasmine-core/*',
+                './bower_components/jasmine-core/lib/jasmine-core.js'
             ]),
             gulp.dest('./build/js/lib')
         ], cb);

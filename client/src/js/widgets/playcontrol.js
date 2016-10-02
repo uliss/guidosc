@@ -166,7 +166,7 @@ PlayControl.prototype.command = function(cmd) {
     if(cmd.part) { this.display_part.text(cmd.part); }
 
     // process "sync"
-    if(cmd.sync) { this.timer.setTime(cmd.sync); }
+    if(cmd.sync !== undefined) { this.timer.setTime(cmd.sync); }
 
     if(cmd.state) {
         switch(cmd.state) {

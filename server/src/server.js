@@ -1,3 +1,4 @@
+var express = require('express');
 var utils = require('./utils');
 var log = utils.log('server');
 var mod = require('./module.js');
@@ -26,15 +27,24 @@ function Server(app_global) {
 
     this.sync_pages = {};
 
-    this.addCommand('pages', 'list available pages', function(msg) {
+    this.addCommand('pages', 'list available pages', function() {
         return Object.keys(this.MODULE_ROUTES);
     });
 
     this.addCommand('sync_add', 'adds given url to sync list', function(args) {
+        if (!args || args.length === 0) return;
+        var url = args[0];
+
+        if (this.MODULE_ROUTES[url] === undefined) {
+            log.error('given URL not found on server: %s', url, {});
+            return;
+        }
+
         this.sync_pages[args[0]] = true;
     });
 
     this.addCommand('sync_remove', 'remove given url to sync list', function(args) {
+        if (!args || args.length === 0) return;
         delete this.sync_pages[args[0]];
     });
 
@@ -46,13 +56,14 @@ function Server(app_global) {
         return VERSION;
     });
 
-    this.addCommand('quit', 'quit server', function() {
-        process.exit(0);
-    });
-
     this.registerModules();
     this.bindHttp();
-    this.bindOsc();
+
+    this.onOSC(this.path(), function(msg) {
+        if (msg[1] != 'quit') return;
+        this.notifyOnQuit();
+        process.exit(0);
+    }.bind(this));
 }
 
 inherits(Server, mod.Module);
@@ -78,104 +89,40 @@ Server.prototype.hasSync = function(url) {
 }
 
 Server.prototype.registerModules = function() {
-    var self = this;
     for (url in this.MODULE_ROUTES) {
-        this.app().get(url, function(req, res) {
+        this.app_global.app.get(url, function(req, res) {
             var req_url = req['path'];
-            var path = self.modulePath(req_url);
+            var path = this.modulePath(req_url);
             // sync registered modules
-            if (self.hasSync(req_url)) {
-                self.oscClient().send("/sync" + req_url);
+            if (this.hasSync(req_url)) {
+                log.verbose("sync url: %s", req_url, {});
+                this.oscSendArray("/guido/sync" + req_url, []);
             }
 
             getHttp(res, path);
-        });
+        }.bind(this));
     }
 }
 
 Server.prototype.bindHttp = function() {
     var app = this.app_global.app;
 
-    // serve CSS files
-    app.get('/css/*.css', function(req, res) {
-        getHttp(res, req['path']);
-    });
-
-    app.get('/css/*', function(req, res) {
-        getHttp(res, req['path']);
-    });
-
-    // serve JS lib files
-    app.get('/js/*', function(req, res) {
-        getHttp(res, req['path']);
-    });
-
-    // serve images files
-    app.get('/img/*.jpg', function(req, res) {
-        getHttp(res, req['path']);
-    });
-
-    app.get('/img/*.png', function(req, res) {
-        getHttp(res, req['path']);
-    });
-
-    // serve WAV files
-    app.get('/sound/*.wav', function(req, res) {
-        getHttp(res, decodeURI(req['path']));
-    });
-}
-
-Server.prototype.bindOsc = function() {
-    var osc_server = this.app_global.osc.server;
-    var io = this.app_global.io;
-
-    this.oscServer().on("/guido/forward", function(msg, rinfo) {
-        if (msg.length < 2) {
-            log.error("forward:", "invalid argument count");
-            return;
-        }
-
-        var path = msg[1];
-        var args = msg.slice(2);
-        log.verbose('master => client: %s %s', path, args.join(' '));
-        io.emit(path, args);
-    });
-}
-
-Server.prototype.bindSocket = function(socket) {
-    mod.Module.prototype.bindSocket.call(this, socket);
-    var self = this;
-
-    socket.on("/guido/forward", function(msg) {
-        try {
-            var path = msg[0];
-            var args = msg.slice(1);
-
-            switch (msg.length) {
-                case 0:
-                    log.error("Invalid forward message format. Should be: DEST_PATH [ARGS]");
-                    break;
-                case 1:
-                    log.verbose('client => master:', path);
-                    self.oscClient().send(path);
-                default:
-                    {
-                        log.verbose('client => master: %s %s', path, args.join(' '));
-                        self.oscClient().send(path, args);
-                    }
-            }
-        } catch (e) {
-            log.error(e.message);
-        }
-    });
+    app.use("/js", express.static(__dirname + '/../../build/js'));
+    app.use("/css", express.static(__dirname + '/../../build/css'));
+    app.use("/img", express.static(__dirname + '/../../build/img'));
+    app.use("/sound", express.static(__dirname + '/../../build/sound'));
 }
 
 Server.prototype.notifyOnBoot = function() {
-    this.oscClient().send(this.path(), 'boot');
+    this.oscSendArray(this.path(), ['boot']);
 }
 
 Server.prototype.notifyOnQuit = function() {
-    this.oscClient().send(this.path(), 'quit');
+    this.oscSendArray(this.path(), ['quit']);
+    this.socketSendArray(this.path(), ['quit']);
 }
 
 module.exports = Server;
+module.exports._test = {
+    log: log
+};

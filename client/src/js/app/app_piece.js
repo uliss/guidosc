@@ -1,7 +1,6 @@
 var app_ui = require('./app_ui.js');
 var server = require('../server.js');
 var utils = require('../utils.js');
-var cli_path = utils.cli_path;
 
 var done = false;
 
@@ -22,8 +21,8 @@ function create_ui() {
             console.log("[app_piece.js] no osc path set");
     });
 
-    server.on(cli_path('/app/piece/set_osc_path'), function(msg) {
-        var path = msg[0].slice(3);
+    server.on('/app/piece/set_osc_path', function(msg) {
+        var path = msg[0];
         $("#ui-modal-load").data("osc_path", path);
         $("#ui-modal-save").data("osc_path", path);
     });

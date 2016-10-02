@@ -23,6 +23,8 @@ create_functions.multitouch = require('./multitouch.js');
 create_functions.pan = require('./pan.js');
 create_functions.hbox = require('./hbox.js');
 create_functions.vbox = require('./vbox.js');
+create_functions.params = require('./params.js');
+create_functions.cursor = require('./cursor.js');
 
 function log(msg) {
     var args = Array.prototype.slice.call(arguments, 0);

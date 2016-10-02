@@ -52,6 +52,10 @@ Module.prototype.broadcastPath = function() {
     return this.path() + "/broadcast";
 };
 
+Module.prototype.onOSC = function(path, fn) {
+    this.app_global.osc.server.on(path, fn);
+}
+
 /**
  * add command to module
  * @param {string} name - command name

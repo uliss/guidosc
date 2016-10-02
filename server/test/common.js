@@ -5,6 +5,10 @@ var expect = chai.expect;
 var t = require('../src/module.js')._test;
 
 var CONTEXT = {
+    app: {
+        get: function() {},
+        use: function() {}
+    },
     io: {
         emit: function() {}
     },
@@ -74,10 +78,10 @@ var CONTEXT = {
     },
     testOSC: function(args) {
         this.osc.server.testMsg.apply(this.osc.server, arguments)
-    },
-    testSocket: function(args) {
-        this.osc.server.testMsg.apply(this.osc.server, arguments)
     }
+    // testSocket: function(args) {
+    //     this.osc.server.testMsg.apply(this.osc.server, arguments)
+    // }
 };
 
 var socket = {

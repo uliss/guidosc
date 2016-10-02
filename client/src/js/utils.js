@@ -4,6 +4,10 @@ function random_int(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
+function is_server() {
+   return ! (typeof window != 'undefined' && window.document);
+}
+
 function cli_path(path) {
     return "/cli" + path;
 }
@@ -86,7 +90,7 @@ function colorNameToHex(color) {
         "gold": "#ffd700",
         "goldenrod": "#daa520",
         "gray": "#808080",
-        "green": "#008000",
+        "green": "#00ff00",
         "greenyellow": "#adff2f",
         "honeydew": "#f0fff0",
         "hotpink": "#ff69b4",
@@ -197,13 +201,17 @@ function shadeColor(color, percent) {
     if (color.charAt(0) == '#') {
         if (color.length == 7) {
             return shadeHexColor(color, percent);
-        } else if (color.length == 4) {
-            return "#" + _.chain(color.slice(1))
-                .map(function(ch) { return ch + ch; })
-                .reduce(function(a, b) { return a + b; });
-        } else {
-            return null;
         }
+
+        if (color.length == 4) {
+            return shadeHexColor("#" + _.chain(color.slice(1))
+                .map(function(ch) {
+                    return ch + ch;
+                })
+                .reduce(add), percent);
+        }
+
+        return null;
     } else {
         var hex = colorNameToHex(color);
         if (hex)
@@ -219,6 +227,7 @@ module.exports.node_path = node_path;
 module.exports.sc_path = sc_path;
 module.exports.random_int = random_int;
 module.exports.log = log;
+module.exports.is_server = is_server;
 
 
 // funcs

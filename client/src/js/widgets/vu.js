@@ -6,24 +6,15 @@ function VU(params) {
     params.max = 1.0;
     params.value = 0;
     nxw.NexusWidget.call(this, 'vu', params);
-
-    // if (this.params.mode)
-    //     this.nx_widget.mode = this.params.mode;
-    //
-    // if (this.params.horizontal) {
-    //     this.nx_widget.hslider = true;
-    // }
-    //
-    // this.nx_widget.init();
 }
 
 inherits(VU, nxw.NexusWidget);
 
 VU.prototype.command = function (cmd) {
-    console.log(cmd);
     if(cmd.state) {
-        this.setValue(cmd.state[0]);
-    //     console.log("")
+        this.nx_widget.rms = cmd.state[0];
+        this.nx_widget.peak = cmd.state[1];
+        this.nx_widget.draw();
     }
 };
 

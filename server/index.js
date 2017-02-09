@@ -50,7 +50,7 @@ function start(oscOutPort) {
     try {
         fs.accessSync(SERVER_ROOT, fs.F_OK);
     } catch (e) {
-        log.error("root server direcoty is not exists: %s", SERVER_ROOT);
+        log.error("root server directory is not exists: %s", SERVER_ROOT);
         log.error("did you you run 'gulp'?");
         process.exit(3);
     }

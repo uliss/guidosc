@@ -112,25 +112,18 @@ button.btn-lg {
 .ui-layout-box > .ui-layout-box {
     margin: 0 0;
 }
-.ui-layout-hbox {
-    canvas, .ui-layout-vbox {
-        display: inline-block;
-    }
+.ui-layout-hbox > * {
+    display: inline-block;
 }
-.ui-layout-vbox {
-    canvas, .ui-layout-hbox {
-        display: block;
-    }
+.ui-layout-vbox  > * {
+    display: block;
 }
-.ui-box-align-center {
-    .nx {
-        margin: 0 auto !important;
-    }
+.ui-box-align-center > .nx {
+    margin: 0 auto !important;
 }
 .ui-box-align-right > .nx {
     margin: 0 0 0 auto !important;
 }
-
 .ui-box-align-left > .nx {
     margin: 0 auto 0 0 !important;
 }

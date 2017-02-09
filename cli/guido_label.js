@@ -13,11 +13,11 @@ var argv = require('yargs')
     .argv;
 
 if (argv._.length < 1) {
-    console.log("no label specified");
+    console.log("Error: no label specified. Try -h or --help options.");
     process.exit(2);
 }
 
-var LABEL = ['/vlabel/set', argv._[0]]
+var LABEL = ['/vlabel/set', encodeURIComponent(argv._.join(' '))]
 
 var client = new osc.Client(argv.s, argv.p);
 client.send('/guido/forward', LABEL, function () {

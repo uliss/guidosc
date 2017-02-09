@@ -23,7 +23,7 @@ Box.prototype.processParams = function(params) {
     }
 
     if (params.height) {
-        this.element.css("width", params.width);
+        this.element.css("height", params.height);
     }
 
     if (params.title) {

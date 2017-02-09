@@ -12,12 +12,25 @@ var Manager = require('./src/manager');
 var Client = require('./src/client');
 var Sound = require('./src/sound');
 var Forward = require('./src/forward');
+var argv = require('yargs')
+    .usage('Usage: $0 [options]')
+    .boolean('f')
+    .alias('f', 'force')
+    .describe('f', 'Force start (remove lock file if exists)')
+    .help('h')
+    .alias('h', 'help')
+    .epilog('copyright 2017')
+    .argv;
 
 const NODE_PORT = 3000;
 const OSC_IN_PORT = 5000;
 const OSC_OUT_PORT = OSC_IN_PORT + 1;
 const PID_FILE = "/usr/local/var/run/guidosc.pid";
 const SERVER_ROOT = __dirname + "/../build";
+
+if(fs.existsSync(PID_FILE) && argv.f) {
+    fs.unlinkSync(PID_FILE)
+}
 
 var log = utils.log();
 
@@ -44,6 +57,7 @@ function start(oscOutPort) {
 
     // handle Ctrl+C terminate
     process.on('SIGINT', function() {
+        log.info('quit');
         process.exit(2);
     });
 

@@ -19,35 +19,4 @@ html(lang="en-US")
         include pug/footer.pug
 
         script(type='text/javascript').
-            $(document).ready(
-                function(){
-                    socket.on('/vmetro/bar', function(msg){
-                        $("#bar-number").html(msg);
-                    });
-
-                    socket.on('/vmetro/numBeats', function(msg){
-                        $("#beats").empty();
-                        for(i = 0; i < msg; i++) {
-                            $("#beats").append('<div id="beat_' + (i+1) + '">' + (i+1) + '</div> ');
-                        }
-
-                        $("#beats").append('<span class="stretch"></span>');
-                    });
-
-                    socket.on('/vmetro/beat', function(msg){
-                        $("#beats div").removeClass("active");
-                        $("#beat_" + msg[0]).addClass("active");
-                        if(msg[1] > 0) {
-                            $("#beat_" + msg[0]).effect("highlight", {}, msg[1]);
-                        }
-                    });
-
-                    socket.on('/vmetro/mark', function(msg){
-                        $("#mark").html(msg);
-                    });
-
-                    socket.on('/vmetro/css', function(msg){
-                        $(".vmetro").css(msg[0], msg[1]);
-                    });
-                }
-            );
+            app_vmetro_run();
